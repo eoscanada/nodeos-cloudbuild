@@ -22,20 +22,17 @@ class battlefield : public eosio::contract {
         :eosio::contract(self)
         {}
 
-
         // @abi
         void dbins(account_name account);
         void dbinstwo(account_name account, uint64_t first, uint64_t second);
         void dbupd(account_name account);
         void dbrem(account_name account);
+
         void dtrx(account_name account, bool fail_now, bool fail_later, uint32_t delay_sec, std::string nonce);
         void dtrxcancel(account_name account);
         void dtrxexec(account_name account, bool fail, std::string nonce);
 
-
     private:
-        // 6 months in seconds (Computation: 6 months * average days per month * 24 hours * 60 minutes * 60 seconds)
-        constexpr static uint32_t SIX_MONTHS_IN_SECONDS = (uint32_t) (6 * (365.25 / 12) * 24 * 60 * 60);
 
         struct member_row {
             uint64_t              id;

@@ -5,7 +5,7 @@
   ],
   "structs": [
     {
-      "name": "acct",
+      "name": "op",
       "base": "",
       "fields": [
         { "name": "account", "type": "account_name" }
@@ -63,7 +63,7 @@
     },
     {
       "name": "dtrxcancel",
-      "type": "acct",
+      "type": "op",
       "ricardian_contract": ""
     },
     {
@@ -73,7 +73,7 @@
     },
     {
       "name": "dbins",
-      "type": "acct",
+      "type": "op",
       "ricardian_contract": ""
     },
     {
@@ -83,12 +83,12 @@
     },
     {
       "name": "dbupd",
-      "type": "acct",
+      "type": "op",
       "ricardian_contract": ""
     },
     {
       "name": "dbrem",
-      "type": "acct",
+      "type": "op",
       "ricardian_contract": ""
     }
   ],

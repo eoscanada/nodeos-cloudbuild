@@ -13,7 +13,6 @@ void battlefield::dbins(account_name account) {
     eosio::print("dbins ran and you're authenticated");
 
     members member_table(_self, _self);
-    auto index = member_table.template get_index<N(byaccount)>();
     member_table.emplace(account, [&](auto& row) {
         row.id = 1;
         row.account = N(dbops1);
@@ -59,12 +58,14 @@ void battlefield::dbupd(account_name account) {
     auto itr1 = index.find(N(dbops1));
     auto itr2 = index.find(N(dbops2));
 
-    index.modify(itr1, 0, [&](auto& row) {
+    index.modify(itr1, _self, [&](auto& row) {
         row.memo = "updated row 1";
-      });
-    index.modify(itr2, 0, [&](auto& row) {
+    });
+
+    index.modify(itr2, account, [&](auto& row) {
+        row.account = N(dbupd);
         row.memo = "updated row 2";
-      });
+    });
 }
 
 // @abi
@@ -74,7 +75,7 @@ void battlefield::dbrem(account_name account) {
     members member_table(_self, _self);
     auto index = member_table.template get_index<N(byaccount)>();
     index.erase(index.find(N(dbops1)));
-    index.erase(index.find(N(dbops2)));
+    index.erase(index.find(N(dbupd)));
 }
 
 // @abi

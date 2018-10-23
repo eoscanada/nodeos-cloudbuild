@@ -1,3 +1,4 @@
+.envrc
 output.log
 state/
 blocks/reversible/

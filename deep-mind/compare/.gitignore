@@ -4,3 +4,4 @@ diff.log
 diff.patch
 output.log
 output.jsonl
+output.stats.jsonl

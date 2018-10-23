@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -47,19 +47,20 @@ rm -rf "$OUTPUT_FILE.bak"
 
 diff -u "$REFERENCE_FILE" "$OUTPUT_FILE" > "$DIFF_FILE"
 
-if [[ "$(cat $DIFF_FILE | wc -l | tr -d ' ')" != "0" ]]; then
+if [ "$(cat $DIFF_FILE | wc -l | tr -d ' ')" != "0" ]; then
     echo "Some differences found between deep-mind reference log and logs produced by this build"
     printf "Check them right now? (y/N) "
     read value
 
     if [[ $value == "y" || $value == "yes", || $value == "Y" ]]; then
-        less $DIFF_FILE
+        viewer=${LESS:-less}
+        $viewer $DIFF_FILE
     else
-        echo "Perfect, you can check them later with:"
-        echo "less $DIFF_FILE"
+        echo "Perfect, you can check them later at:"
+        echo "$DIFF_FILE"
     fi
 
     exit 1
 else
-    echo No differences found with this version of the deep-mind instrumentation and the reference log.
+    echo "No differences found with this version of the deep-mind instrumentation and the reference log."
 fi
