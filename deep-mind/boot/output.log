@@ -1,0 +1,149 @@
+Downloading content from "./contracts/eosio-1.6.1/eosio.msig.abi".
+Downloading content from "./contracts/eosio-1.6.1/eosio.bios.abi".
+Downloading content from "./contracts/eosio-1.6.1/eosio.bios.wasm".
+Downloading content from "./contracts/eosio-1.6.1/eosio.system.abi".
+Downloading content from "./contracts/eosio-1.6.1/eosio.wrap.wasm".
+Downloading content from "./contracts/eosio-1.6.1/eosio.msig.wasm".
+Caching content from "./contracts/eosio-1.6.1/eosio.bios.abi".
+Downloading content from "./contracts/eosio-1.6.1/eosio.wrap.abi".
+Downloading content from "./contracts/eosio-1.6.1/eosio.token.wasm".
+Caching content from "./contracts/eosio-1.6.1/eosio.wrap.wasm".
+Caching content from "./contracts/eosio-1.6.1/eosio.bios.wasm".
+Downloading content from "./contracts/eosio-1.6.1/eosio.token.abi".
+Caching content from "./contracts/eosio-1.6.1/eosio.msig.abi".
+Downloading content from "./contracts/eosio-1.6.1/eosio.system.wasm".
+Caching content from "./contracts/eosio-1.6.1/eosio.wrap.abi".
+Caching content from "./contracts/eosio-1.6.1/eosio.system.abi".
+Caching content from "./contracts/eosio-1.6.1/eosio.token.wasm".
+Caching content from "./contracts/eosio-1.6.1/eosio.token.abi".
+Caching content from "./contracts/eosio-1.6.1/eosio.msig.wasm".
+- "./contracts/eosio-1.6.1/eosio.bios.abi" done
+- "./contracts/eosio-1.6.1/eosio.msig.abi" done
+Downloading content from "../battlefield/battlefield-with-handler.abi".
+Caching content from "./contracts/eosio-1.6.1/eosio.system.wasm".
+- "./contracts/eosio-1.6.1/eosio.token.wasm" done
+Downloading content from "../battlefield/battlefield-with-handler.wasm".
+- "./contracts/eosio-1.6.1/eosio.msig.wasm" done
+- "./contracts/eosio-1.6.1/eosio.bios.wasm" done
+- "./contracts/eosio-1.6.1/eosio.wrap.wasm" done
+- "./contracts/eosio-1.6.1/eosio.wrap.abi" done
+- "./contracts/eosio-1.6.1/eosio.token.abi" done
+- "./contracts/eosio-1.6.1/eosio.system.abi" done
+Downloading content from "../battlefield/battlefield-without-handler.wasm".
+Downloading content from "../battlefield/battlefield-without-handler.abi".
+Caching content from "../battlefield/battlefield-with-handler.wasm".
+Caching content from "../battlefield/battlefield-with-handler.abi".
+- "./contracts/eosio-1.6.1/eosio.system.wasm" done
+- "../battlefield/battlefield-with-handler.abi" done
+- "../battlefield/battlefield-with-handler.wasm" done
+Caching content from "../battlefield/battlefield-without-handler.wasm".
+- "../battlefield/battlefield-without-handler.wasm" done
+Caching content from "../battlefield/battlefield-without-handler.abi".
+- "../battlefield/battlefield-without-handler.abi" done
+START BOOT SEQUENCE...
+Using preset key:
+
+	Public key: EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP
+	Private key: 5Jpj..hcrx
+
+Not writing actions to 'actions.jsonl'. Activate with --write-actions
+---- BEGIN HOOK "boot" ----
+---- END HOOK "boot" ----
+Pinging target node at "http://localhost:9898"...
+target node error: http://localhost:9898/v1/chain/get_info: Post http://localhost:9898/v1/chain/get_info: dial tcp [::1]:9898: connect: connection refused
+e
+target node error: http://localhost:9898/v1/chain/get_info: Post http://localhost:9898/v1/chain/get_info: dial tcp [::1]:9898: connect: connection refused
+e
+target node: still no blocks in
+.
+ touchdown!
+In-memory keys:
+- EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP
+- EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP
+
+Setting eosio.bios code for account eosio  [system.setcode] 
+.
+ done
+Create account eosio.msig (on-chain multi-signature helper)  [system.newaccount] 
+.
+ done
+Create account eosio.token (main multi-currency contract, including EOS)  [system.newaccount] 
+.
+ done
+Create account eosio.ram (where buyram proceeds go)  [system.newaccount] 
+.
+ done
+Create account eosio.ramfee (where buyram fees go)  [system.newaccount] 
+.
+ done
+Create account eosio.names (where bidname revenues go)  [system.newaccount] 
+.
+ done
+Create account eosio.stake (where delegated stakes go)  [system.newaccount] 
+.
+ done
+Create account eosio.saving (unallocated inflation)  [system.newaccount] 
+.
+ done
+Create account eosio.bpay (fund per-block bucket)  [system.newaccount] 
+.
+ done
+Create account eosio.vpay (fund per-vote bucket)  [system.newaccount] 
+.
+ done
+Setting privileged account for eosio.msig  [system.setpriv] 
+.
+ done
+Setting eosio.msig code for account eosio.msig  [system.setcode] 
+.
+ done
+Setting eosio.token code for account eosio.token  [system.setcode] 
+.
+ done
+Creating the EOS currency symbol  [token.create] 
+.
+ done
+Issuing initial EOS monetary base  [token.issue] 
+.
+ done
+Create account battlefield1  [system.newaccount] 
+.
+ done
+Create account battlefield3  [system.newaccount] 
+.
+ done
+Create account notified1  [system.newaccount] 
+.
+ done
+Create account notified2  [system.newaccount] 
+.
+ done
+Create account notified3  [system.newaccount] 
+.
+ done
+Create account notified4  [system.newaccount] 
+.
+ done
+Create account notified5  [system.newaccount] 
+.
+ done
+Setting battlefield (without `onerorr` handler) code for account battlefield1  [system.setcode] 
+.
+ done
+Setting battlefield (with `onerror` handler) code for account battlefield3  [system.setcode] 
+.
+ done
+Setting battlefield code for account notified2  [system.setcode] 
+.
+ done
+Create zzzzzzzzzzzz account  [system.newaccount] 
+.
+ done
+Replacing eosio account from eosio.bios contract to eosio.system  [system.setcode] 
+.
+ done
+Transfer a big chunk to eosio.token to create its account  [token.transfer] 
+r
+error pushing transaction for step "token.transfer", chunk 0: Internal Service Error: eosio_assert_message assertion failure: assertion failure with message: unable to find key: pending console output: 
+r
+error pushing transaction for step "token.transfer", chunk 0: Internal Service Error: eosio_assert_message assertion failure: assertion failure with message: unable to find key: pending console output: 

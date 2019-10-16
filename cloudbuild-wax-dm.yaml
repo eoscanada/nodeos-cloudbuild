@@ -1,0 +1,118 @@
+### commit and push those values in !
+substitutions:
+  _TAG: wax-1.8.4-1.0.0
+  # Check available images with `gcloud container images list-tags gcr.io/eoscanada-shared-services/eosio-buildenv`
+  _EOSIO_BUILDENV_TAG: v1.8.1
+  _PATCHES: "wax-deep-mind-v1.8.4-1.0.0-v10.2.patch wax-deep-mind-logging-v1.8.4-1.0.0-v10.2.patch"
+
+steps:
+- id: docker-build-full
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'build',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-wax-full:${_TAG}-dm',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-wax-full:${_TAG}-${SHORT_SHA}-dm',
+    '-f', 'Dockerfile-eos-full',
+    '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-wax-full:${_TAG}-dm',
+    '--build-arg', 'EOSIO_BUILDENV_TAG=${_EOSIO_BUILDENV_TAG}',
+    '--build-arg', 'SRCTAG=${_TAG}',
+    '--build-arg', 'PATCHES=${_PATCHES}',
+    '.'
+  ]
+
+# - id: deep-mind-tests
+#   name: gcr.io/${PROJECT_ID}/eosio-wax-full:${_TAG}-${SHORT_SHA}-dm
+#   dir: /workspace/deep-mind/compare
+#   env:
+#   - "SKIP_GO_TESTS=y"
+#   args: [
+#     './run.sh', '/opt/eosio/bin/nodeos'
+#   ]
+
+# Download SSH encrypted private key and SSH known hosts file
+- id: download-ssh-encrypted-private-key
+  name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', 'gs://${PROJECT_ID}_cloudbuild/github_id_rsa.enc', '/root/.ssh/github_id_rsa.enc']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+- id: download-ssh-known-hosts-file
+  name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', 'gs://${PROJECT_ID}_cloudbuild/github_known_hosts', '/root/.ssh/known_hosts']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Decrypting SSH encrypted private key
+- id: decrypt-ssh-encrypted-private-key
+  name: 'gcr.io/cloud-builders/gcloud'
+  args:
+  - kms
+  - decrypt
+  - --project=eoscanada-public
+  - --ciphertext-file=/root/.ssh/github_id_rsa.enc
+  - --plaintext-file=/root/.ssh/id_rsa
+  - --location=global
+  - --keyring=github-keys
+  - --key=github-key
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Initializing Git with SSH credentials and URL transformation
+- id: configure-git-for-private-repositories-access
+  name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args:
+  - '-ce'
+  - |
+    chmod 600 /root/.ssh/id_rsa
+    cat <<EOF >/root/.ssh/config
+    Hostname github.com
+    IdentityFile /root/.ssh/id_rsa
+    EOF
+    git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+  - name: 'git'
+    path: /root/.git
+
+# Perform the actual build/test step of the project
+# - id: deep-mind-go-tests
+#   name: gcr.io/cloud-builders/go:debian
+#   entrypoint: 'sh'
+#   env:
+#   - CGO_ENABLED=0
+#   args:
+#   - '-cxe'
+#   - |
+#     cd /workspace/deep-mind/compare
+#     go test -v ./...
+#   volumes:
+#   - name: 'ssh'
+#     path: /root/.ssh
+#   - name: 'git'
+#     path: /root/.git
+
+- id: docker-build-prod
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'build',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-wax-prod:${_TAG}-dm',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-wax-prod:${_TAG}-${SHORT_SHA}-dm',
+    '--build-arg', 'EOS_FULL_TAG=${_TAG}-${SHORT_SHA}-dm',
+    '-f', 'Dockerfile-wax-prod',
+    '.'
+  ]
+
+options:
+  machineType: 'N1_HIGHCPU_32'
+
+images:
+- gcr.io/$PROJECT_ID/eosio-wax-full:${_TAG}-dm
+- gcr.io/$PROJECT_ID/eosio-wax-full:${_TAG}-${SHORT_SHA}-dm
+- gcr.io/$PROJECT_ID/eosio-wax-prod:${_TAG}-${SHORT_SHA}-dm
+
+timeout: 1h
