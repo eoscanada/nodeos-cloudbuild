@@ -9,7 +9,7 @@ ARG REPOSITORY=https://github.com/worldwide-asset-exchange/wax-blockchain.git
 
 COPY patches /patches
 
-RUN git clone -b $SRCTAG --depth 1 $REPOSITORY --recursive \
+RUN git clone -b $SRCTAG --depth 1 $REPOSITORY --recursive eos \
     && cd eos \
     && echo PATCHING... && for patch in $PATCHES; do echo APPLYING PATCH $patch; patch -p1 < /patches/$patch; done && echo PATCHED \
     && echo "$SRCTAG:$(git rev-parse HEAD)" > /etc/eosio-version \
