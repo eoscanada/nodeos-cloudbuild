@@ -76,8 +76,8 @@ steps:
   volumes:
   - name: 'ssh'
     path: /root/.ssh
-  - name: 'git'
-    path: /root/.git
+  # - name: 'git'
+  #   path: /root/.git
 
 # Perform the actual build/test step of the project
 # - id: deep-mind-go-tests
