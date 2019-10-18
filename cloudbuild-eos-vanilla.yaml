@@ -1,6 +1,6 @@
 ### commit and push those values in !
 substitutions:
-  _TAG: v1.8.4
+  _TAG: v1.8.5
   # Check available images with `gcloud container images list-tags gcr.io/eoscanada-shared-services/eosio-buildenv`
   _EOSIO_BUILDENV_TAG: v1.8.1
 
@@ -9,10 +9,10 @@ steps:
   name: gcr.io/cloud-builders/docker
   args: [
     'build',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-${SHORT_SHA}',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-jungle2-fix',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-${SHORT_SHA}-jungle2-fix',
     '-f', 'Dockerfile-eos-full',
-    '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}',
+    '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-jungle2-fix',
     '--build-arg', 'EOSIO_BUILDENV_TAG=${_EOSIO_BUILDENV_TAG}',
     '--build-arg', 'SRCTAG=${_TAG}',
     '--build-arg', 'PATCHES=${_PATCHES}',
@@ -22,9 +22,9 @@ steps:
   name: gcr.io/cloud-builders/docker
   args: [
     'build',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}-${SHORT_SHA}',
-    '--build-arg', 'EOS_FULL_TAG=${_TAG}-${SHORT_SHA}',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}-jungle2-fix',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}-${SHORT_SHA}-jungle2-fix',
+    '--build-arg', 'EOS_FULL_TAG=${_TAG}-${SHORT_SHA}-jungle2-fix',
     '-f', 'Dockerfile-eos-prod',
     '.'
   ]
@@ -33,8 +33,8 @@ options:
   machineType: 'N1_HIGHCPU_32'
 
 images:
-- gcr.io/$PROJECT_ID/eosio-eos-full:${_TAG}
-- gcr.io/$PROJECT_ID/eosio-eos-full:${_TAG}-${SHORT_SHA}
-- gcr.io/$PROJECT_ID/eosio-eos-prod:${_TAG}-${SHORT_SHA}
+- gcr.io/$PROJECT_ID/eosio-eos-full:${_TAG}-jungle2-fix
+- gcr.io/$PROJECT_ID/eosio-eos-full:${_TAG}-${SHORT_SHA}-jungle2-fix
+- gcr.io/$PROJECT_ID/eosio-eos-prod:${_TAG}-${SHORT_SHA}-jungle2-fix
 
 timeout: 1h

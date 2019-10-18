@@ -1,19 +1,19 @@
 ### commit and push those values in !
 substitutions:
-  _TAG: v1.8.4
+  _TAG: v1.8.5
   # Check available images with `gcloud container images list-tags gcr.io/eoscanada-shared-services/eosio-buildenv`
   _EOSIO_BUILDENV_TAG: v1.8.1
-  _PATCHES: "eos-deep-mind-v1.8.4-v10.2.patch eos-deep-mind-logging-v1.8.4-v10.2.patch"
+  _PATCHES: "eos-deep-mind-v1.8.5-v10.2-jungle2-fix.patch eos-deep-mind-logging-v1.8.5-v10.2-jungle2-fix.patch"
 
 steps:
 - id: docker-build-full
   name: gcr.io/cloud-builders/docker
   args: [
     'build',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-dm',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-${SHORT_SHA}-dm',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-dm-jungle2-fix',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-${SHORT_SHA}-dm-jungle2-fix',
     '-f', 'Dockerfile-eos-full',
-    '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-dm',
+    '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-dm-jungle2-fix',
     '--build-arg', 'EOSIO_BUILDENV_TAG=${_EOSIO_BUILDENV_TAG}',
     '--build-arg', 'SRCTAG=${_TAG}',
     '--build-arg', 'PATCHES=${_PATCHES}',
@@ -21,7 +21,7 @@ steps:
   ]
 
 - id: deep-mind-tests
-  name: gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-${SHORT_SHA}-dm
+  name: gcr.io/${PROJECT_ID}/eosio-eos-full:${_TAG}-${SHORT_SHA}-dm-jungle2-fix
   dir: /workspace/deep-mind/compare
   env:
   - "SKIP_GO_TESTS=y"
@@ -100,9 +100,9 @@ steps:
   name: gcr.io/cloud-builders/docker
   args: [
     'build',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}-dm',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}-${SHORT_SHA}-dm',
-    '--build-arg', 'EOS_FULL_TAG=${_TAG}-${SHORT_SHA}-dm',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}-dm-jungle2-fix',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}-${SHORT_SHA}-dm-jungle2-fix',
+    '--build-arg', 'EOS_FULL_TAG=${_TAG}-${SHORT_SHA}-dm-jungle2-fix',
     '-f', 'Dockerfile-eos-prod',
     '.'
   ]
@@ -111,8 +111,8 @@ options:
   machineType: 'N1_HIGHCPU_32'
 
 images:
-- gcr.io/$PROJECT_ID/eosio-eos-full:${_TAG}-dm
-- gcr.io/$PROJECT_ID/eosio-eos-full:${_TAG}-${SHORT_SHA}-dm
-- gcr.io/$PROJECT_ID/eosio-eos-prod:${_TAG}-${SHORT_SHA}-dm
+- gcr.io/$PROJECT_ID/eosio-eos-full:${_TAG}-dm-jungle2-fix
+- gcr.io/$PROJECT_ID/eosio-eos-full:${_TAG}-${SHORT_SHA}-dm-jungle2-fix
+- gcr.io/$PROJECT_ID/eosio-eos-prod:${_TAG}-${SHORT_SHA}-dm-jungle2-fix
 
 timeout: 1h
