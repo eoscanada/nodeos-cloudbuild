@@ -24,15 +24,23 @@ trap "kill -s TERM $PID || true" EXIT
 
 pushd $ROOT &> /dev/null
 echo "Booting $1 node with smart contracts ..."
-eos-bios boot bootseq.yaml --reuse-genesis --api-url http://localhost:9898
+eosc boot bootseq.eosio.yaml --reuse-genesis --api-url http://localhost:9898
 mv output.log ${BIOS_BOOT_FILE}
 popd
 
 echo "Booting completed, launching test cases..."
+sleep 5
 
 export EOSC_GLOBAL_INSECURE_VAULT_PASSPHRASE=secure
 export EOSC_GLOBAL_API_URL=http://localhost:9898
 export EOSC_GLOBAL_VAULT_FILE="$ROOT/eosc-vault.json"
+
+echo "Initializing eosio.system contract"
+eosc transfer eosio eosio.token 10000000 --memo "for init"
+sleep 0.6
+
+echo "Initializing eosio.system contract"
+eosc tx create eosio init '{"version": 0, "core": "4,EOS"}' -p eosio@active
 
 echo "Setting eosio.code permissions on contract accounts (Account for commit d8fa7c0, which shields from mis-used authority)"
 eosc system updateauth battlefield1 active owner "$ROOT"/active_auth_battlefield1.yaml
@@ -156,7 +164,7 @@ if [[ $SKIP_EOS_PROTOCOL_FEATURES == "" ]]; then
     curl -X POST "$EOSC_GLOBAL_API_URL/v1/producer/schedule_protocol_feature_activations" -d '{"protocol_features_to_activate": ["0ec7e080177b2c02b278d5088611686b49d739925a92d9bfcacd7fc6b74053bd"]}' > /dev/null
     sleep 1.2
 
-    eosc system setcontract eosio contracts/eosio.system.wasm contracts/eosio.system.abi
+    eosc system setcontract eosio contracts/eosio-1.7.0/eosio.system.wasm contracts/eosio-1.7.0/eosio.system.abi
     sleep 0.6
 
     # Those will triggers RAM correction operations to appears
