@@ -525,6 +525,19 @@ index 83988c166..b3b1d5e38 100644
        _db.remove( permission );
     }
  
+diff --git a/libraries/chain/block_header_state.cpp b/libraries/chain/block_header_state.cpp
+index 59a1eaa33..f7dd7aba6 100644
+--- a/libraries/chain/block_header_state.cpp
++++ b/libraries/chain/block_header_state.cpp
+@@ -156,7 +156,7 @@ namespace eosio { namespace chain {
+       } else {
+          result.active_schedule                  = active_schedule;
+          result.producer_to_last_produced        = producer_to_last_produced;
+-         result.producer_to_last_produced[prokey.producer_name] = result.block_num;
++         result.producer_to_last_produced[prokey.producer_name] = block_num;
+          result.producer_to_last_implied_irb     = producer_to_last_implied_irb;
+          result.producer_to_last_implied_irb[prokey.producer_name] = dpos_proposed_irreversible_blocknum;
+       }
 diff --git a/libraries/chain/chain_config.cpp b/libraries/chain/chain_config.cpp
 index 35c77f832..846884be2 100644
 --- a/libraries/chain/chain_config.cpp
@@ -541,7 +554,7 @@ index 35c77f832..846884be2 100644
        EOS_ASSERT( target_block_net_usage_pct <= config::percent_100, action_validate_exception,
                    "target block net usage percentage cannot exceed 100%" );
 diff --git a/libraries/chain/controller.cpp b/libraries/chain/controller.cpp
-index 17e9c961c..9960b7429 100644
+index 21481c66e..08293cad8 100644
 --- a/libraries/chain/controller.cpp
 +++ b/libraries/chain/controller.cpp
 @@ -30,6 +30,9 @@
@@ -693,7 +706,7 @@ index 17e9c961c..9960b7429 100644
        EOS_ASSERT( !pending, block_validate_exception, "pending block already exists" );
  
        auto guard_pending = fc::make_scoped_exit([this, head_block_num=head->block_num](){
-@@ -1893,6 +1957,14 @@ struct controller_impl {
+@@ -1892,6 +1956,14 @@ struct controller_impl {
           auto old_head = head;
           ilog("switching forks from ${current_head_id} (block number ${current_head_num}) to ${new_head_id} (block number ${new_head_num})",
                ("current_head_id", head->id)("current_head_num", head->block_num)("new_head_id", new_head->id)("new_head_num", new_head->block_num) );
@@ -708,7 +721,7 @@ index 17e9c961c..9960b7429 100644
           auto branches = fork_db.fetch_branch_from( new_head->id, head->id );
  
           if( branches.second.size() > 0 ) {
-@@ -2205,6 +2277,14 @@ struct controller_impl {
+@@ -2204,6 +2276,14 @@ struct controller_impl {
           trx.expiration = self.pending_block_time() + fc::microseconds(999'999); // Round up to nearest second to avoid appearing expired
           trx.set_reference_block( self.head_block_id() );
        }
@@ -723,7 +736,7 @@ index 17e9c961c..9960b7429 100644
        return trx;
     }
  
-@@ -2279,7 +2359,7 @@ chainbase::database& controller::mutable_db()const { return my->db; }
+@@ -2278,7 +2358,7 @@ chainbase::database& controller::mutable_db()const { return my->db; }
  
  const fork_database& controller::fork_db()const { return my->fork_db; }
  
@@ -732,7 +745,7 @@ index 17e9c961c..9960b7429 100644
     const auto& pfs = my->protocol_features.get_protocol_feature_set();
     auto cur_time = pending_block_time();
  
-@@ -2376,6 +2456,16 @@ void controller::preactivate_feature( const digest_type& feature_digest ) {
+@@ -2375,6 +2455,16 @@ void controller::preactivate_feature( const digest_type& feature_digest ) {
                 ("digest", feature_digest)
     );
  
@@ -749,7 +762,7 @@ index 17e9c961c..9960b7429 100644
     my->db.modify( pso, [&]( auto& ps ) {
        ps.preactivated_protocol_features.push_back( feature_digest );
     } );
-@@ -3019,17 +3109,31 @@ const flat_set<account_name> &controller::get_resource_greylist() const {
+@@ -3032,17 +3122,31 @@ const flat_set<account_name> &controller::get_resource_greylist() const {
  }
  
  
@@ -782,7 +795,7 @@ index 17e9c961c..9960b7429 100644
  }
  
  bool controller::all_subjective_mitigations_disabled()const {
-@@ -3075,7 +3179,12 @@ void controller_impl::on_activation<builtin_protocol_feature_t::replace_deferred
+@@ -3088,7 +3192,12 @@ void controller_impl::on_activation<builtin_protocol_feature_t::replace_deferred
                 ("name", itr->name)("adjust", itr->ram_correction)("current", current_ram_usage) );
        }
  
@@ -1104,7 +1117,7 @@ index 37b73cb51..5296634ea 100644
     uint32_t   target_block_net_usage_pct;          ///< the target percent (1% == 100, 100%= 10,000) of maximum net usage; exceeding this triggers congestion handling
     uint32_t   max_transaction_net_usage;           ///< the maximum objectively measured net usage that the chain will allow regardless of account limits
 diff --git a/libraries/chain/include/eosio/chain/controller.hpp b/libraries/chain/include/eosio/chain/controller.hpp
-index c7702d094..b3254d84b 100644
+index d20e7b5b5..56c98215d 100644
 --- a/libraries/chain/include/eosio/chain/controller.hpp
 +++ b/libraries/chain/include/eosio/chain/controller.hpp
 @@ -78,6 +78,10 @@ namespace eosio { namespace chain {
@@ -1118,7 +1131,7 @@ index c7702d094..b3254d84b 100644
              genesis_state            genesis;
              wasm_interface::vm_type  wasm_runtime = chain::config::default_wasm_runtime;
  
-@@ -105,7 +109,7 @@ namespace eosio { namespace chain {
+@@ -106,7 +110,7 @@ namespace eosio { namespace chain {
           void add_indices();
           void startup( std::function<bool()> shutdown, const snapshot_reader_ptr& snapshot = nullptr );
  
@@ -1127,9 +1140,9 @@ index c7702d094..b3254d84b 100644
  
           vector<digest_type> get_preactivated_protocol_features()const;
  
-@@ -272,7 +276,7 @@ namespace eosio { namespace chain {
- 
-          void set_subjective_cpu_leeway(fc::microseconds leeway);
+@@ -275,7 +279,7 @@ namespace eosio { namespace chain {
+          void set_greylist_limit( uint32_t limit );
+          uint32_t get_greylist_limit()const;
  
 -         void add_to_ram_correction( account_name account, uint64_t ram_bytes );
 +         void add_to_ram_correction( account_name account, uint64_t ram_bytes, uint32_t action_id, const char* event_id );
@@ -1137,7 +1150,7 @@ index c7702d094..b3254d84b 100644
  
           static fc::optional<uint64_t> convert_exception_to_error_code( const fc::exception& e );
 diff --git a/libraries/chain/include/eosio/chain/resource_limits.hpp b/libraries/chain/include/eosio/chain/resource_limits.hpp
-index 08d1d1f7c..1206e4abf 100644
+index 5e1f3ca84..a96850489 100644
 --- a/libraries/chain/include/eosio/chain/resource_limits.hpp
 +++ b/libraries/chain/include/eosio/chain/resource_limits.hpp
 @@ -1,4 +1,5 @@
@@ -1145,8 +1158,8 @@ index 08d1d1f7c..1206e4abf 100644
 +#include <eosio/chain/chain_config.hpp>
  #include <eosio/chain/exceptions.hpp>
  #include <eosio/chain/types.hpp>
- #include <eosio/chain/snapshot.hpp>
-@@ -70,7 +71,7 @@ namespace eosio { namespace chain { namespace resource_limits {
+ #include <eosio/chain/config.hpp>
+@@ -71,7 +72,7 @@ namespace eosio { namespace chain { namespace resource_limits {
           void update_account_usage( const flat_set<account_name>& accounts, uint32_t ordinal );
           void add_transaction_usage( const flat_set<account_name>& accounts, uint64_t cpu_usage, uint64_t net_usage, uint32_t ordinal );
  
@@ -1156,7 +1169,7 @@ index 08d1d1f7c..1206e4abf 100644
  
           /// set_account_limits returns true if new ram_bytes limit is more restrictive than the previously set one
 diff --git a/libraries/chain/include/eosio/chain/transaction_context.hpp b/libraries/chain/include/eosio/chain/transaction_context.hpp
-index a799d6771..2fdcc442d 100644
+index 1c262ccfe..88a7c034a 100644
 --- a/libraries/chain/include/eosio/chain/transaction_context.hpp
 +++ b/libraries/chain/include/eosio/chain/transaction_context.hpp
 @@ -5,6 +5,18 @@
@@ -1237,7 +1250,7 @@ index ca0457ce1..38a464a1d 100644
        _builtin_protocol_features[indx].previous = _head_of_builtin_activation_list;
        _builtin_protocol_features[indx].activation_block_num = current_block_num;
 diff --git a/libraries/chain/resource_limits.cpp b/libraries/chain/resource_limits.cpp
-index d98ca79fb..8b12fff7e 100644
+index 10edf6911..1cda41423 100644
 --- a/libraries/chain/resource_limits.cpp
 +++ b/libraries/chain/resource_limits.cpp
 @@ -54,6 +54,12 @@ void resource_limits_manager::add_indices() {
@@ -1387,7 +1400,7 @@ index d98ca79fb..8b12fff7e 100644
  
  }
 diff --git a/libraries/chain/transaction_context.cpp b/libraries/chain/transaction_context.cpp
-index 8ec0d36e9..2f0075c32 100644
+index 407cfb74c..33325c9a2 100644
 --- a/libraries/chain/transaction_context.cpp
 +++ b/libraries/chain/transaction_context.cpp
 @@ -556,9 +556,9 @@ namespace bacc = boost::accumulators;
@@ -1402,7 +1415,7 @@ index 8ec0d36e9..2f0075c32 100644
        if( ram_delta > 0 ) {
           validate_ram_usage.insert( account );
        }
-@@ -665,6 +665,13 @@ namespace bacc = boost::accumulators;
+@@ -674,6 +674,13 @@ namespace bacc = boost::accumulators;
  
     void transaction_context::execute_action( uint32_t action_ordinal, uint32_t recurse_depth ) {
        apply_context acontext( control, *this, action_ordinal, recurse_depth );
@@ -1416,7 +1429,7 @@ index 8ec0d36e9..2f0075c32 100644
        acontext.exec();
     }
  
-@@ -680,6 +687,7 @@ namespace bacc = boost::accumulators;
+@@ -689,6 +696,7 @@ namespace bacc = boost::accumulators;
  
        auto first_auth = trx.first_authorizer();
  
@@ -1424,7 +1437,7 @@ index 8ec0d36e9..2f0075c32 100644
        uint32_t trx_size = 0;
        const auto& cgto = control.mutable_db().create<generated_transaction_object>( [&]( auto& gto ) {
          gto.trx_id      = id;
-@@ -690,10 +698,26 @@ namespace bacc = boost::accumulators;
+@@ -699,10 +707,26 @@ namespace bacc = boost::accumulators;
          gto.delay_until = gto.published + delay;
          gto.expiration  = gto.delay_until + fc::seconds(control.get_global_properties().configuration.deferred_trx_expiration_window);
          trx_size = gto.set( trx );
@@ -1475,7 +1488,7 @@ index 6ad6a9cb1..cc39a8c74 100644
        // Kept as intrinsic rather than implementing on WASM side (using prints_l and strlen) because strlen is faster on native side.
        void prints(null_terminated_ptr str) {
 diff --git a/plugins/chain_plugin/chain_plugin.cpp b/plugins/chain_plugin/chain_plugin.cpp
-index 596edf733..fda8a7130 100644
+index 90c09b787..ffe9de4f9 100644
 --- a/plugins/chain_plugin/chain_plugin.cpp
 +++ b/plugins/chain_plugin/chain_plugin.cpp
 @@ -207,6 +207,13 @@ chain_plugin::~chain_plugin(){}
@@ -1599,61 +1612,502 @@ index 596edf733..fda8a7130 100644
  
  chain_apis::read_write::read_write(controller& db, const fc::microseconds& abi_serializer_max_time)
 diff --git a/unittests/resource_limits_test.cpp b/unittests/resource_limits_test.cpp
-index 9040c5bdc..9431a546a 100644
+index d4ce66e5c..976937f82 100644
 --- a/unittests/resource_limits_test.cpp
 +++ b/unittests/resource_limits_test.cpp
-@@ -253,11 +253,11 @@ BOOST_AUTO_TEST_SUITE(resource_limits_test)
-       process_account_limit_updates();
+@@ -14,29 +14,31 @@ using namespace eosio::chain::resource_limits;
+ using namespace eosio::testing;
+ using namespace eosio::chain;
  
-       for (uint64_t idx = 0; idx < expected_iterations - 1; idx++) {
+-class resource_limits_fixture: private chainbase_fixture<1024*1024>, public resource_limits_manager
++class resource_limits_fixture : private chainbase_fixture<1024 * 1024>, public resource_limits_manager
+ {
+-   public:
+-      resource_limits_fixture()
+-      :chainbase_fixture()
+-      ,resource_limits_manager(*chainbase_fixture::_db)
+-      {
+-         add_indices();
+-         initialize_database();
+-      }
++public:
++   resource_limits_fixture()
++       : chainbase_fixture(), resource_limits_manager(*chainbase_fixture::_db)
++   {
++      add_indices();
++      initialize_database();
++   }
+ 
+-      ~resource_limits_fixture() {}
++   ~resource_limits_fixture() {}
+ 
+-      chainbase::database::session start_session() {
+-         return chainbase_fixture::_db->start_undo_session(true);
+-      }
++   chainbase::database::session start_session()
++   {
++      return chainbase_fixture::_db->start_undo_session(true);
++   }
+ };
+ 
+-constexpr uint64_t expected_elastic_iterations(uint64_t from, uint64_t to, uint64_t rate_num, uint64_t rate_den ) {
++constexpr uint64_t expected_elastic_iterations(uint64_t from, uint64_t to, uint64_t rate_num, uint64_t rate_den)
++{
+    uint64_t result = 0;
+    uint64_t cur = from;
+ 
+-   while((from < to && cur < to) || (from > to && cur > to)) {
++   while ((from < to && cur < to) || (from > to && cur > to))
++   {
+       cur = cur * rate_num / rate_den;
+       result += 1;
+    }
+@@ -44,12 +46,13 @@ constexpr uint64_t expected_elastic_iterations(uint64_t from, uint64_t to, uint6
+    return result;
+ }
+ 
+-
+-constexpr uint64_t expected_exponential_average_iterations( uint64_t from, uint64_t to, uint64_t value, uint64_t window_size ) {
++constexpr uint64_t expected_exponential_average_iterations(uint64_t from, uint64_t to, uint64_t value, uint64_t window_size)
++{
+    uint64_t result = 0;
+    uint64_t cur = from;
+ 
+-   while((from < to && cur < to) || (from > to && cur > to)) {
++   while ((from < to && cur < to) || (from > to && cur > to))
++   {
+       cur = cur * (uint64_t)(window_size - 1) / (uint64_t)(window_size);
+       cur += value / (uint64_t)(window_size);
+       result += 1;
+@@ -60,89 +63,96 @@ constexpr uint64_t expected_exponential_average_iterations( uint64_t from, uint6
+ 
+ BOOST_AUTO_TEST_SUITE(resource_limits_test)
+ 
+-   /**
++/**
+     * Test to make sure that the elastic limits for blocks relax and contract as expected
+     */
+-   BOOST_FIXTURE_TEST_CASE(elastic_cpu_relax_contract, resource_limits_fixture) try {
+-      const uint64_t desired_virtual_limit = config::default_max_block_cpu_usage * config::maximum_elastic_resource_multiplier;
+-      const uint64_t expected_relax_iterations = expected_elastic_iterations( config::default_max_block_cpu_usage, desired_virtual_limit, 1000, 999 );
+-
+-      // this is enough iterations for the average to reach/exceed the target (triggering congestion handling) and then the iterations to contract down to the min
+-      // subtracting 1 for the iteration that pulls double duty as reaching/exceeding the target and starting congestion handling
+-      const uint64_t expected_contract_iterations =
+-              expected_exponential_average_iterations(0, EOS_PERCENT(config::default_max_block_cpu_usage, config::default_target_block_cpu_usage_pct), config::default_max_block_cpu_usage, config::block_cpu_usage_average_window_ms / config::block_interval_ms ) +
+-              expected_elastic_iterations( desired_virtual_limit, config::default_max_block_cpu_usage, 99, 100 ) - 1;
+-
+-      const account_name account(1);
+-      initialize_account(account);
+-      set_account_limits(account, -1, -1, -1);
+-      process_account_limit_updates();
+-
+-      // relax from the starting state (congested) to the idle state as fast as possible
+-      uint32_t iterations = 0;
+-      while( get_virtual_block_cpu_limit() < desired_virtual_limit && iterations <= expected_relax_iterations ) {
+-         add_transaction_usage({account},0,0,iterations);
+-         process_block_usage(iterations++);
+-      }
++BOOST_FIXTURE_TEST_CASE(elastic_cpu_relax_contract, resource_limits_fixture)
++try
++{
++   const uint64_t desired_virtual_limit = config::default_max_block_cpu_usage * config::maximum_elastic_resource_multiplier;
++   const uint64_t expected_relax_iterations = expected_elastic_iterations(config::default_max_block_cpu_usage, desired_virtual_limit, 1000, 999);
++
++   // this is enough iterations for the average to reach/exceed the target (triggering congestion handling) and then the iterations to contract down to the min
++   // subtracting 1 for the iteration that pulls double duty as reaching/exceeding the target and starting congestion handling
++   const uint64_t expected_contract_iterations =
++       expected_exponential_average_iterations(0, EOS_PERCENT(config::default_max_block_cpu_usage, config::default_target_block_cpu_usage_pct), config::default_max_block_cpu_usage, config::block_cpu_usage_average_window_ms / config::block_interval_ms) +
++       expected_elastic_iterations(desired_virtual_limit, config::default_max_block_cpu_usage, 99, 100) - 1;
++
++   const account_name account(1);
++   initialize_account(account);
++   set_account_limits(account, -1, -1, -1);
++   process_account_limit_updates();
++
++   // relax from the starting state (congested) to the idle state as fast as possible
++   uint32_t iterations = 0;
++   while (get_virtual_block_cpu_limit() < desired_virtual_limit && iterations <= expected_relax_iterations)
++   {
++      add_transaction_usage({account}, 0, 0, iterations);
++      process_block_usage(iterations++);
++   }
+ 
+-      BOOST_REQUIRE_EQUAL(iterations, expected_relax_iterations);
+-      BOOST_REQUIRE_EQUAL(get_virtual_block_cpu_limit(), desired_virtual_limit);
++   BOOST_REQUIRE_EQUAL(iterations, expected_relax_iterations);
++   BOOST_REQUIRE_EQUAL(get_virtual_block_cpu_limit(), desired_virtual_limit);
+ 
+-      // push maximum resources to go from idle back to congested as fast as possible
+-      while( get_virtual_block_cpu_limit() > config::default_max_block_cpu_usage
+-              && iterations <= expected_relax_iterations + expected_contract_iterations ) {
+-         add_transaction_usage({account}, config::default_max_block_cpu_usage, 0, iterations);
+-         process_block_usage(iterations++);
+-      }
++   // push maximum resources to go from idle back to congested as fast as possible
++   while (get_virtual_block_cpu_limit() > config::default_max_block_cpu_usage && iterations <= expected_relax_iterations + expected_contract_iterations)
++   {
++      add_transaction_usage({account}, config::default_max_block_cpu_usage, 0, iterations);
++      process_block_usage(iterations++);
++   }
+ 
+-      BOOST_REQUIRE_EQUAL(iterations, expected_relax_iterations + expected_contract_iterations);
+-      BOOST_REQUIRE_EQUAL(get_virtual_block_cpu_limit(), config::default_max_block_cpu_usage);
+-   } FC_LOG_AND_RETHROW();
++   BOOST_REQUIRE_EQUAL(iterations, expected_relax_iterations + expected_contract_iterations);
++   BOOST_REQUIRE_EQUAL(get_virtual_block_cpu_limit(), config::default_max_block_cpu_usage);
++}
++FC_LOG_AND_RETHROW();
+ 
+-   /**
++/**
+     * Test to make sure that the elastic limits for blocks relax and contract as expected
+     */
+-   BOOST_FIXTURE_TEST_CASE(elastic_net_relax_contract, resource_limits_fixture) try {
+-      const uint64_t desired_virtual_limit = config::default_max_block_net_usage * config::maximum_elastic_resource_multiplier;
+-      const uint64_t expected_relax_iterations = expected_elastic_iterations( config::default_max_block_net_usage, desired_virtual_limit, 1000, 999 );
+-
+-      // this is enough iterations for the average to reach/exceed the target (triggering congestion handling) and then the iterations to contract down to the min
+-      // subtracting 1 for the iteration that pulls double duty as reaching/exceeding the target and starting congestion handling
+-      const uint64_t expected_contract_iterations =
+-              expected_exponential_average_iterations(0, EOS_PERCENT(config::default_max_block_net_usage, config::default_target_block_net_usage_pct), config::default_max_block_net_usage, config::block_size_average_window_ms / config::block_interval_ms ) +
+-              expected_elastic_iterations( desired_virtual_limit, config::default_max_block_net_usage, 99, 100 ) - 1;
+-
+-      const account_name account(1);
+-      initialize_account(account);
+-      set_account_limits(account, -1, -1, -1);
+-      process_account_limit_updates();
+-
+-      // relax from the starting state (congested) to the idle state as fast as possible
+-      uint32_t iterations = 0;
+-      while( get_virtual_block_net_limit() < desired_virtual_limit && iterations <= expected_relax_iterations ) {
+-         add_transaction_usage({account},0,0,iterations);
+-         process_block_usage(iterations++);
+-      }
++BOOST_FIXTURE_TEST_CASE(elastic_net_relax_contract, resource_limits_fixture)
++try
++{
++   const uint64_t desired_virtual_limit = config::default_max_block_net_usage * config::maximum_elastic_resource_multiplier;
++   const uint64_t expected_relax_iterations = expected_elastic_iterations(config::default_max_block_net_usage, desired_virtual_limit, 1000, 999);
++
++   // this is enough iterations for the average to reach/exceed the target (triggering congestion handling) and then the iterations to contract down to the min
++   // subtracting 1 for the iteration that pulls double duty as reaching/exceeding the target and starting congestion handling
++   const uint64_t expected_contract_iterations =
++       expected_exponential_average_iterations(0, EOS_PERCENT(config::default_max_block_net_usage, config::default_target_block_net_usage_pct), config::default_max_block_net_usage, config::block_size_average_window_ms / config::block_interval_ms) +
++       expected_elastic_iterations(desired_virtual_limit, config::default_max_block_net_usage, 99, 100) - 1;
++
++   const account_name account(1);
++   initialize_account(account);
++   set_account_limits(account, -1, -1, -1);
++   process_account_limit_updates();
++
++   // relax from the starting state (congested) to the idle state as fast as possible
++   uint32_t iterations = 0;
++   while (get_virtual_block_net_limit() < desired_virtual_limit && iterations <= expected_relax_iterations)
++   {
++      add_transaction_usage({account}, 0, 0, iterations);
++      process_block_usage(iterations++);
++   }
+ 
+-      BOOST_REQUIRE_EQUAL(iterations, expected_relax_iterations);
+-      BOOST_REQUIRE_EQUAL(get_virtual_block_net_limit(), desired_virtual_limit);
++   BOOST_REQUIRE_EQUAL(iterations, expected_relax_iterations);
++   BOOST_REQUIRE_EQUAL(get_virtual_block_net_limit(), desired_virtual_limit);
+ 
+-      // push maximum resources to go from idle back to congested as fast as possible
+-      while( get_virtual_block_net_limit() > config::default_max_block_net_usage
+-              && iterations <= expected_relax_iterations + expected_contract_iterations ) {
+-         add_transaction_usage({account},0, config::default_max_block_net_usage, iterations);
+-         process_block_usage(iterations++);
+-      }
++   // push maximum resources to go from idle back to congested as fast as possible
++   while (get_virtual_block_net_limit() > config::default_max_block_net_usage && iterations <= expected_relax_iterations + expected_contract_iterations)
++   {
++      add_transaction_usage({account}, 0, config::default_max_block_net_usage, iterations);
++      process_block_usage(iterations++);
++   }
+ 
+-      BOOST_REQUIRE_EQUAL(iterations, expected_relax_iterations + expected_contract_iterations);
+-      BOOST_REQUIRE_EQUAL(get_virtual_block_net_limit(), config::default_max_block_net_usage);
+-   } FC_LOG_AND_RETHROW();
++   BOOST_REQUIRE_EQUAL(iterations, expected_relax_iterations + expected_contract_iterations);
++   BOOST_REQUIRE_EQUAL(get_virtual_block_net_limit(), config::default_max_block_net_usage);
++}
++FC_LOG_AND_RETHROW();
+ 
+-   /**
++/**
+     * create 5 accounts with different weights, verify that the capacities are as expected and that usage properly enforces them
+     */
+ 
+-
+ // TODO: restore weighted capacity cpu tests
+ #if 0
+    BOOST_FIXTURE_TEST_CASE(weighted_capacity_cpu, resource_limits_fixture) try {
+@@ -207,135 +217,153 @@ BOOST_AUTO_TEST_SUITE(resource_limits_test)
+    } FC_LOG_AND_RETHROW();
+ #endif
+ 
+-   BOOST_FIXTURE_TEST_CASE(enforce_block_limits_cpu, resource_limits_fixture) try {
+-      const account_name account(1);
+-      initialize_account(account);
+-      set_account_limits(account, -1, -1, -1 );
+-      process_account_limit_updates();
+-
+-      const uint64_t increment = 1000;
+-      const uint64_t expected_iterations = config::default_max_block_cpu_usage / increment;
+-
+-      for (uint64_t idx = 0; idx < expected_iterations; idx++) {
+-         add_transaction_usage({account}, increment, 0, 0);
+-      }
+-
+-      BOOST_REQUIRE_THROW(add_transaction_usage({account}, increment, 0, 0), block_resource_exhausted);
+-
+-   } FC_LOG_AND_RETHROW();
+-
+-   BOOST_FIXTURE_TEST_CASE(enforce_block_limits_net, resource_limits_fixture) try {
+-      const account_name account(1);
+-      initialize_account(account);
+-      set_account_limits(account, -1, -1, -1 );
+-      process_account_limit_updates();
+-
+-      const uint64_t increment = 1000;
+-      const uint64_t expected_iterations = config::default_max_block_net_usage / increment;
+-
+-      for (uint64_t idx = 0; idx < expected_iterations; idx++) {
+-         add_transaction_usage({account}, 0, increment, 0);
+-      }
+-
+-      BOOST_REQUIRE_THROW(add_transaction_usage({account}, 0, increment, 0), block_resource_exhausted);
+-
+-   } FC_LOG_AND_RETHROW();
++BOOST_FIXTURE_TEST_CASE(enforce_block_limits_cpu, resource_limits_fixture)
++try
++{
++   const account_name account(1);
++   initialize_account(account);
++   set_account_limits(account, -1, -1, -1);
++   process_account_limit_updates();
+ 
+-   BOOST_FIXTURE_TEST_CASE(enforce_account_ram_limit, resource_limits_fixture) try {
+-      const uint64_t limit = 1000;
+-      const uint64_t increment = 77;
+-      const uint64_t expected_iterations = (limit + increment - 1 ) / increment;
++   const uint64_t increment = 1000;
++   const uint64_t expected_iterations = config::default_max_block_cpu_usage / increment;
+ 
++   for (uint64_t idx = 0; idx < expected_iterations; idx++)
++   {
++      add_transaction_usage({account}, increment, 0, 0);
++   }
+ 
+-      const account_name account(1);
+-      initialize_account(account);
+-      set_account_limits(account, limit, -1, -1 );
+-      process_account_limit_updates();
++   BOOST_REQUIRE_THROW(add_transaction_usage({account}, increment, 0, 0), block_resource_exhausted);
++}
++FC_LOG_AND_RETHROW();
+ 
+-      for (uint64_t idx = 0; idx < expected_iterations - 1; idx++) {
 -         add_pending_ram_usage(account, increment);
-+         add_pending_ram_usage(account, increment, 0, "test", "test", "test", "test");
-          verify_account_ram_usage(account);
-       }
+-         verify_account_ram_usage(account);
+-      }
++BOOST_FIXTURE_TEST_CASE(enforce_block_limits_net, resource_limits_fixture)
++try
++{
++   const account_name account(1);
++   initialize_account(account);
++   set_account_limits(account, -1, -1, -1);
++   process_account_limit_updates();
  
 -      add_pending_ram_usage(account, increment);
-+      add_pending_ram_usage(account, increment, 0, "test", "test", "test", "test");
-       BOOST_REQUIRE_THROW(verify_account_ram_usage(account), ram_usage_exceeded);
-    } FC_LOG_AND_RETHROW();
+-      BOOST_REQUIRE_THROW(verify_account_ram_usage(account), ram_usage_exceeded);
+-   } FC_LOG_AND_RETHROW();
++   const uint64_t increment = 1000;
++   const uint64_t expected_iterations = config::default_max_block_net_usage / increment;
  
-@@ -267,7 +267,7 @@ BOOST_AUTO_TEST_SUITE(resource_limits_test)
-       set_account_limits(account, 100, -1, -1 );
-       verify_account_ram_usage(account);
-       process_account_limit_updates();
+-   BOOST_FIXTURE_TEST_CASE(enforce_account_ram_limit_underflow, resource_limits_fixture) try {
+-      const account_name account(1);
+-      initialize_account(account);
+-      set_account_limits(account, 100, -1, -1 );
+-      verify_account_ram_usage(account);
+-      process_account_limit_updates();
 -      BOOST_REQUIRE_THROW(add_pending_ram_usage(account, -101), transaction_exception);
-+      BOOST_REQUIRE_THROW(add_pending_ram_usage(account, -101, 0, "test", "test", "test", "test"), transaction_exception);
++   for (uint64_t idx = 0; idx < expected_iterations; idx++)
++   {
++      add_transaction_usage({account}, 0, increment, 0);
++   }
  
-    } FC_LOG_AND_RETHROW();
+-   } FC_LOG_AND_RETHROW();
++   BOOST_REQUIRE_THROW(add_transaction_usage({account}, 0, increment, 0), block_resource_exhausted);
++}
++FC_LOG_AND_RETHROW();
  
-@@ -277,11 +277,11 @@ BOOST_AUTO_TEST_SUITE(resource_limits_test)
-       set_account_limits(account, UINT64_MAX, -1, -1 );
-       verify_account_ram_usage(account);
-       process_account_limit_updates();
+-   BOOST_FIXTURE_TEST_CASE(enforce_account_ram_limit_overflow, resource_limits_fixture) try {
+-      const account_name account(1);
+-      initialize_account(account);
+-      set_account_limits(account, UINT64_MAX, -1, -1 );
+-      verify_account_ram_usage(account);
+-      process_account_limit_updates();
 -      add_pending_ram_usage(account, UINT64_MAX/2);
-+      add_pending_ram_usage(account, UINT64_MAX/2, 0, "test", "test", "test", "test");
-       verify_account_ram_usage(account);
+-      verify_account_ram_usage(account);
 -      add_pending_ram_usage(account, UINT64_MAX/2);
-+      add_pending_ram_usage(account, UINT64_MAX/2, 0, "test", "test", "test", "test");
++BOOST_FIXTURE_TEST_CASE(enforce_account_ram_limit, resource_limits_fixture)
++try
++{
++   const uint64_t limit = 1000;
++   const uint64_t increment = 77;
++   const uint64_t expected_iterations = (limit + increment - 1) / increment;
++
++   const account_name account(1);
++   initialize_account(account);
++   set_account_limits(account, limit, -1, -1);
++   process_account_limit_updates();
++
++   for (uint64_t idx = 0; idx < expected_iterations - 1; idx++)
++   {
++      add_pending_ram_usage(account, increment, 0, "test", "test", "test", "test");
        verify_account_ram_usage(account);
 -      BOOST_REQUIRE_THROW(add_pending_ram_usage(account, 2), transaction_exception);
-+      BOOST_REQUIRE_THROW(add_pending_ram_usage(account, 2, 0, "test", "test", "test", "test"), transaction_exception);
++   }
  
-    } FC_LOG_AND_RETHROW();
+-   } FC_LOG_AND_RETHROW();
++   add_pending_ram_usage(account, increment, 0, "test", "test", "test", "test");
++   BOOST_REQUIRE_THROW(verify_account_ram_usage(account), ram_usage_exceeded);
++}
++FC_LOG_AND_RETHROW();
  
-@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_SUITE(resource_limits_test)
-       initialize_account(account);
-       set_account_limits(account, limit, -1, -1 );
-       process_account_limit_updates();
+-   BOOST_FIXTURE_TEST_CASE(enforce_account_ram_commitment, resource_limits_fixture) try {
+-      const int64_t limit = 1000;
+-      const int64_t commit = 600;
+-      const int64_t increment = 77;
+-      const int64_t expected_iterations = (limit - commit + increment - 1 ) / increment;
++BOOST_FIXTURE_TEST_CASE(enforce_account_ram_limit_underflow, resource_limits_fixture)
++try
++{
++   const account_name account(1);
++   initialize_account(account);
++   set_account_limits(account, 100, -1, -1);
++   verify_account_ram_usage(account);
++   process_account_limit_updates();
++   BOOST_REQUIRE_THROW(add_pending_ram_usage(account, -101, 0, "test", "test", "test", "test"), transaction_exception);
++}
++FC_LOG_AND_RETHROW();
+ 
++BOOST_FIXTURE_TEST_CASE(enforce_account_ram_limit_overflow, resource_limits_fixture)
++try
++{
++   const account_name account(1);
++   initialize_account(account);
++   set_account_limits(account, UINT64_MAX, -1, -1);
++   verify_account_ram_usage(account);
++   process_account_limit_updates();
++   add_pending_ram_usage(account, UINT64_MAX / 2, 0, "test", "test", "test", "test");
++   verify_account_ram_usage(account);
++   add_pending_ram_usage(account, UINT64_MAX / 2, 0, "test", "test", "test", "test");
++   verify_account_ram_usage(account);
++   BOOST_REQUIRE_THROW(add_pending_ram_usage(account, 2, 0, "test", "test", "test", "test"), transaction_exception);
++}
++FC_LOG_AND_RETHROW();
+ 
+-      const account_name account(1);
+-      initialize_account(account);
+-      set_account_limits(account, limit, -1, -1 );
+-      process_account_limit_updates();
 -      add_pending_ram_usage(account, commit);
-+      add_pending_ram_usage(account, commit, 0, "test", "test", "test", "test");
++BOOST_FIXTURE_TEST_CASE(enforce_account_ram_commitment, resource_limits_fixture)
++try
++{
++   const int64_t limit = 1000;
++   const int64_t commit = 600;
++   const int64_t increment = 77;
++   const int64_t expected_iterations = (limit - commit + increment - 1) / increment;
++
++   const account_name account(1);
++   initialize_account(account);
++   set_account_limits(account, limit, -1, -1);
++   process_account_limit_updates();
++   add_pending_ram_usage(account, commit, 0, "test", "test", "test", "test");
++   verify_account_ram_usage(account);
++
++   for (int idx = 0; idx < expected_iterations - 1; idx++)
++   {
++      set_account_limits(account, limit - increment * idx, -1, -1);
        verify_account_ram_usage(account);
+-
+-      for (int idx = 0; idx < expected_iterations - 1; idx++) {
+-         set_account_limits(account, limit - increment * idx, -1, -1);
+-         verify_account_ram_usage(account);
+-         process_account_limit_updates();
+-      }
+-
+-      set_account_limits(account, limit - increment * expected_iterations, -1, -1);
+-      BOOST_REQUIRE_THROW(verify_account_ram_usage(account), ram_usage_exceeded);
+-   } FC_LOG_AND_RETHROW();
+-
+-
+-   BOOST_FIXTURE_TEST_CASE(sanity_check, resource_limits_fixture) try {
+-      int64_t  total_staked_tokens = 1'000'000'000'0000ll;
+-      int64_t  user_stake = 1'0000ll;
+-      uint64_t max_block_cpu = 200'000.; // us;
+-      uint64_t blocks_per_day = 2*60*60*24;
+-      uint64_t total_cpu_per_period = max_block_cpu * blocks_per_day;
+-
+-      double congested_cpu_time_per_period = (double(total_cpu_per_period) * user_stake) / total_staked_tokens;
+-      wdump((congested_cpu_time_per_period));
+-      double uncongested_cpu_time_per_period = congested_cpu_time_per_period * config::maximum_elastic_resource_multiplier;
+-      wdump((uncongested_cpu_time_per_period));
+-
+-      initialize_account( N(dan) );
+-      initialize_account( N(everyone) );
+-      set_account_limits( N(dan), 0, 0, user_stake );
+-      set_account_limits( N(everyone), 0, 0, (total_staked_tokens - user_stake) );
+       process_account_limit_updates();
++   }
  
-       for (int idx = 0; idx < expected_iterations - 1; idx++) {
-@@ -333,6 +333,6 @@ BOOST_AUTO_TEST_SUITE(resource_limits_test)
+-      // dan cannot consume more than 34 us per day
+-      BOOST_REQUIRE_THROW( add_transaction_usage( {N(dan)}, 35, 0, 1 ), tx_cpu_usage_exceeded );
+-
+-      // Ensure CPU usage is 0 by "waiting" for one day's worth of blocks to pass.
+-      add_transaction_usage( {N(dan)}, 0, 0, 1 + blocks_per_day );
++   set_account_limits(account, limit - increment * expected_iterations, -1, -1);
++   BOOST_REQUIRE_THROW(verify_account_ram_usage(account), ram_usage_exceeded);
++}
++FC_LOG_AND_RETHROW();
  
- 
- 
--   } FC_LOG_AND_RETHROW() 
-+   } FC_LOG_AND_RETHROW()
+-      // But dan should be able to consume up to 34 us per day.
+-      add_transaction_usage( {N(dan)}, 34, 0, 2 + blocks_per_day );
+-   } FC_LOG_AND_RETHROW()
++BOOST_FIXTURE_TEST_CASE(sanity_check, resource_limits_fixture)
++try
++{
++   int64_t total_staked_tokens = 1'000'000'000'0000ll;
++   int64_t user_stake = 1'0000ll;
++   uint64_t max_block_cpu = 200'000.; // us;
++   uint64_t blocks_per_day = 2 * 60 * 60 * 24;
++   uint64_t total_cpu_per_period = max_block_cpu * blocks_per_day;
++
++   double congested_cpu_time_per_period = (double(total_cpu_per_period) * user_stake) / total_staked_tokens;
++   wdump((congested_cpu_time_per_period));
++   double uncongested_cpu_time_per_period = congested_cpu_time_per_period * config::maximum_elastic_resource_multiplier;
++   wdump((uncongested_cpu_time_per_period));
++
++   initialize_account(N(dan));
++   initialize_account(N(everyone));
++   set_account_limits(N(dan), 0, 0, user_stake);
++   set_account_limits(N(everyone), 0, 0, (total_staked_tokens - user_stake));
++   process_account_limit_updates();
++
++   // dan cannot consume more than 34 us per day
++   BOOST_REQUIRE_THROW(add_transaction_usage({N(dan)}, 35, 0, 1), tx_cpu_usage_exceeded);
++
++   // Ensure CPU usage is 0 by "waiting" for one day's worth of blocks to pass.
++   add_transaction_usage({N(dan)}, 0, 0, 1 + blocks_per_day);
++
++   // But dan should be able to consume up to 34 us per day.
++   add_transaction_usage({N(dan)}, 34, 0, 2 + blocks_per_day);
++}
++FC_LOG_AND_RETHROW()
  
  BOOST_AUTO_TEST_SUITE_END()
