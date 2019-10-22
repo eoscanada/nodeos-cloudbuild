@@ -525,6 +525,19 @@ index 83988c166..b3b1d5e38 100644
        _db.remove( permission );
     }
  
+diff --git a/libraries/chain/block_header_state.cpp b/libraries/chain/block_header_state.cpp
+index 59a1eaa33..f7dd7aba6 100644
+--- a/libraries/chain/block_header_state.cpp
++++ b/libraries/chain/block_header_state.cpp
+@@ -156,7 +156,7 @@ namespace eosio { namespace chain {
+       } else {
+          result.active_schedule                  = active_schedule;
+          result.producer_to_last_produced        = producer_to_last_produced;
+-         result.producer_to_last_produced[prokey.producer_name] = result.block_num;
++         result.producer_to_last_produced[prokey.producer_name] = block_num;
+          result.producer_to_last_implied_irb     = producer_to_last_implied_irb;
+          result.producer_to_last_implied_irb[prokey.producer_name] = dpos_proposed_irreversible_blocknum;
+       }
 diff --git a/libraries/chain/chain_config.cpp b/libraries/chain/chain_config.cpp
 index 35c77f832..846884be2 100644
 --- a/libraries/chain/chain_config.cpp
