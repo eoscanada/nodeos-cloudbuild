@@ -1,25 +1,79 @@
+### commit and push those values in !
 substitutions:
-  _TAG: v2.0.0
-  _PULL_TAG: v2.0.0-rc3
+  # Check available images with `gcloud container images list-tags gcr.io/eoscanada-shared-services/eosio-buildenv`
+  _REPOSITORY: "https://github.com/EOSIO/eos.git"
+  _TAG: v2.0.3
 
 steps:
-- id: docker-eosio-buildenv
+- id: eos-clone
+  name: gcr.io/cloud-builders/git
+  args: [
+    'clone',
+    '--branch=${_TAG}',
+    '--depth=1',
+    '--recursive',
+    '${_REPOSITORY}',
+    '/git',
+  ]
+  volumes:
+  - name: 'git'
+    path: '/git'
+
+- id: docker-eos-full
   name: gcr.io/cloud-builders/docker
   args: [
     'build',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-buildenv:${_TAG}',
-    '-t', 'gcr.io/${PROJECT_ID}/eosio-buildenv:${_TAG}-${SHORT_SHA}',
-    '-f', 'Dockerfile-eosio-buildenv',
-    '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-buildenv:${_TAG}',
-    '--build-arg', 'SRCTAG=${_PULL_TAG}',
+    '-t', 'gcr.io/${PROJECT_ID}/eosio-base:centos-7.7',
+    '-f', '/git/.cicd/platforms/pinned/centos-7.7-pinned.dockerfile',
+    '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-base:centos-7.7',
     '.'
   ]
+  volumes:
+  - name: 'git'
+    path: '/git'
+
+# - id: docker-eos-prod
+#   name: gcr.io/cloud-builders/docker
+#   args: [
+#     'build',
+#     '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}',
+#     '-t', 'gcr.io/${PROJECT_ID}/eosio-eos-prod:${_TAG}-${SHORT_SHA}',
+#     '--build-arg', 'EOS_FULL_TAG=${_TAG}-${SHORT_SHA}',
+#     '-f', 'Dockerfile-eos-prod',
+#     '.'
+#   ]
 
 options:
   machineType: 'N1_HIGHCPU_32'
 
 images:
-- gcr.io/$PROJECT_ID/eosio-buildenv:${_TAG}
-- gcr.io/$PROJECT_ID/eosio-buildenv:${_TAG}-${SHORT_SHA}
+- gcr.io/${PROJECT_ID}/eosio-base:centos-7.7
 
-timeout: 2h
+timeout: 1h
+
+
+# substitutions:
+#   _TAG: v2.0.0
+#   _PULL_TAG: v2.0.0-rc3
+
+# steps:
+# - id: docker-eosio-buildenv
+#   name: gcr.io/cloud-builders/docker
+#   args: [
+#     'build',
+#     '-t', 'gcr.io/${PROJECT_ID}/eosio-buildenv:${_TAG}',
+#     '-t', 'gcr.io/${PROJECT_ID}/eosio-buildenv:${_TAG}-${SHORT_SHA}',
+#     '-f', 'Dockerfile-eosio-buildenv',
+#     '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-buildenv:${_TAG}',
+#     '--build-arg', 'SRCTAG=${_PULL_TAG}',
+#     '.'
+#   ]
+
+# options:
+#   machineType: 'N1_HIGHCPU_32'
+
+# images:
+# - gcr.io/$PROJECT_ID/eosio-buildenv:${_TAG}
+# - gcr.io/$PROJECT_ID/eosio-buildenv:${_TAG}-${SHORT_SHA}
+
+# timeout: 2h
