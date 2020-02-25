@@ -12,7 +12,7 @@ steps:
     '--build-arg', 'PACKAGE_URL=${_PACKAGE_URL}',
     '-t', 'gcr.io/$PROJECT_ID/eosio-cdt:${_TAG}',
     '-t', 'gcr.io/$PROJECT_ID/eosio-cdt:latest',
-    '-f', 'Dockerfile-eosio-cdt',
+    '-f', 'eosio-cdt.dockerfile',
     '.'
   ]
 

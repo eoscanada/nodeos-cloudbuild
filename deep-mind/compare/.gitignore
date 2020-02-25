@@ -1,8 +1,0 @@
-blocks/
-protocol_features/
-state/
-diff.log
-diff.patch
-output.log
-output.jsonl
-output.stats.json

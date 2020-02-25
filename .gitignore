@@ -1,8 +1,28 @@
-# Docker build directories
-build-*/**
-
-# IDE
-.vscode
-
-# System files
+*.log
+*.dmlog
+*.jsonl
+*.stats.json
 .DS_Store
+.envrc
+.vscode
+build-*/**
+node_modules
+
+#  For ./deep-mind/boot
+/deep-mind/boot/state/
+!/deep-mind/boot/blocks/blocks.log
+/deep-mind/boot/blocks/reversible/
+/deep-mind/boot/blocks-*/
+/deep-mind/boot/snapshot-*
+/deep-mind/boot/snapshots/
+/deep-mind/boot/snapshots-*/
+/deep-mind/boot/webauthn_keys_db.json
+
+# For ./deep-mind/compare
+/deep-mind/compare/blocks/
+/deep-mind/compare/protocol_features/
+/deep-mind/compare/state/
+/deep-mind/compare/diff.patch
+!/deep-mind/compare/reference.jsonl
+!/deep-mind/compare/reference.log
+!/deep-mind/compare/reference.stats.json

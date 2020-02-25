@@ -5,4 +5,4 @@
 
 export CLOUDSDK_CORE_PROJECT=eoscanada-shared-services
 
-gcloud builds submit . --config cloudbuild-eosio-contracts.yaml --timeout 8h --substitutions _SOURCE_BRANCH=v2 --machine-type=n1-highcpu-32
+gcloud builds submit . --config eosio-contracts.cb.yaml --timeout 8h --substitutions _SOURCE_BRANCH=v2 --machine-type=n1-highcpu-32

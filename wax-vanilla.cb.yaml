@@ -11,7 +11,7 @@ steps:
     'build',
     '-t', 'gcr.io/${PROJECT_ID}/eosio-wax-full:${_TAG}',
     '-t', 'gcr.io/${PROJECT_ID}/eosio-wax-full:${_TAG}-${SHORT_SHA}',
-    '-f', 'Dockerfile-wax-full',
+    '-f', 'wax-full.dockerfile',
     '--cache-from', 'gcr.io/${PROJECT_ID}/eosio-wax-full:${_TAG}',
     '--build-arg', 'EOSIO_BUILDENV_TAG=${_EOSIO_BUILDENV_TAG}',
     '--build-arg', 'SRCTAG=${_TAG}',
@@ -25,7 +25,7 @@ steps:
     '-t', 'gcr.io/${PROJECT_ID}/eosio-wax-prod:${_TAG}',
     '-t', 'gcr.io/${PROJECT_ID}/eosio-wax-prod:${_TAG}-${SHORT_SHA}',
     '--build-arg', 'EOS_FULL_TAG=${_TAG}-${SHORT_SHA}',
-    '-f', 'Dockerfile-wax-prod',
+    '-f', 'wax-prod.dockerfile',
     '.'
   ]
 

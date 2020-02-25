@@ -12,7 +12,7 @@ steps:
 
   - FORUM_BRANCH=master
 
-  args: ["-c", "./build_contracts.sh"]
+  args: ["-c", "./eosio-contracts-build.sh"]
 
 - id: push-artifacts
   name: gcr.io/cloud-builders/gsutil

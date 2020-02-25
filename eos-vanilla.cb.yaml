@@ -1,0 +1,30 @@
+### Commit and push those values in!
+substitutions:
+  # Copy the `*.deb` file of the release you want to build from 'https://github.com/EOSIO/eos/releases'
+  _PACKAGE_URL: "https://github.com/EOSIO/eos/releases/download/v2.0.3/eosio_2.0.3-1-ubuntu-18.04_amd64.deb"
+  _IMAGE_TAG: ubuntu-18.04
+  _VERSION: v2.0.3
+
+steps:
+- id: download package
+  name: 'gcr.io/cloud-builders/wget'
+  entrypoint: 'bash'
+  args:
+  - '-ce'
+  - |
+    wget ${_PACKAGE_URL}
+
+- id: docker build
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'build',
+    '-t', 'gcr.io/$PROJECT_ID/eosio-eos-prod:${_VERSION}',
+    '-t', 'gcr.io/$PROJECT_ID/eosio-eos-prod:${_VERSION}',
+    '-f', 'eos-${_IMAGE_TAG}.dockerfile',
+    '--build-arg', 'VERSION=${_VERSION}',
+    '.'
+  ]
+
+images:
+- gcr.io/$PROJECT_ID/eosio-eos-prod:${_VERSION}
+

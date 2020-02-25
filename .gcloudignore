@@ -1,13 +1,18 @@
+# Check regularly files includes with `gcloud meta list-files-for-upload`
+
 .gcloudignore
 .git
-.gitignore
 #!include:.gitignore
 
-.vscode
-deep-mind/boot/state/
-deep-mind/boot/blocks/reversible/
-deep-mind/compare/state/
-deep-mind/compare/blocks/
-deep-mind/compare/output.jsonl
-deep-mind/compare/reference.jsonl
-deep-mind/compare/output.log
+README.md
+*.patch
+/deep-mind/battlefield/
+/deep-mind/boot/contracts*
+/deep-mind/boot/genesis*
+/deep-mind/boot/snapshots*
+/deep-mind/boot/state
+/deep-mind/boot/webauthn_signer
+/deep-mind/boot/*.ini
+/deep-mind/boot/*.json
+/deep-mind/boot/*.sh
+/deep-mind/boot/*.yaml
