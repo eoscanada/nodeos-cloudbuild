@@ -1,6 +1,6 @@
 {
     "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
-    "version": "eosio::abi/1.1",
+    "version": "eosio::abi/1.2",
     "types": [],
     "structs": [
         {
@@ -202,6 +202,16 @@
             ]
         },
         {
+            "name": "kv1insert",
+            "base": "",
+            "fields": [
+                {
+                    "name": "any",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "member_row",
             "base": "",
             "fields": [
@@ -309,6 +319,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "kv1insert",
+            "type": "kv1insert",
+            "ricardian_contract": ""
+        },
+        {
             "name": "nestdtrxexec",
             "type": "nestdtrxexec",
             "ricardian_contract": ""
@@ -329,5 +344,6 @@
         }
     ],
     "ricardian_clauses": [],
-    "variants": []
+    "variants": [],
+    "action_results": []
 }

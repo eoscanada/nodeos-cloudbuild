@@ -28,10 +28,10 @@ contents:
   - name: battlefield-with-handler.abi
     url: ../battlefield/battlefield-with-handler.abi
 
-  - name: battlefield-without-handler.wasm
-    url: ../battlefield/battlefield-without-handler.wasm
-  - name: battlefield-without-handler.abi
-    url: ../battlefield/battlefield-without-handler.abi
+  # - name: battlefield-without-handler.wasm
+  #   url: ../battlefield/battlefield-without-handler.wasm
+  # - name: battlefield-without-handler.abi
+  #   url: ../battlefield/battlefield-without-handler.abi
 
 ################################# BOOT SEQUENCE ###################################
 boot_sequence:
@@ -41,18 +41,18 @@ boot_sequence:
     account: eosio
     contract_name_ref: eosio.bios
 
-- op: system.newaccount
-  label: Create account eosio2
-  data:
-    creator: eosio
-    new_account: eosio2
-    pubkey: ephemeral
-- op: system.newaccount
-  label: Create account eosio3
-  data:
-    creator: eosio
-    new_account: eosio3
-    pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create account eosio2
+#   data:
+#     creator: eosio
+#     new_account: eosio2
+#     pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create account eosio3
+#   data:
+#     creator: eosio
+#     new_account: eosio3
+#     pubkey: ephemeral
 
 - op: system.newaccount
   label: Create account eosio.msig (on-chain multi-signature helper)
@@ -136,12 +136,12 @@ boot_sequence:
 
 ### Battlefield setup
 
-- op: system.newaccount
-  label: Create account battlefield1
-  data:
-    creator: eosio
-    new_account: battlefield1
-    pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create account battlefield1
+#   data:
+#     creator: eosio
+#     new_account: battlefield1
+#     pubkey: ephemeral
 
 # Account battlefield2 is created manually to test our newaccount instrumentation
 
@@ -152,69 +152,69 @@ boot_sequence:
     new_account: battlefield3
     pubkey: ephemeral
 
-- op: system.newaccount
-  label: Create account notified1
-  data:
-    creator: eosio
-    new_account: notified1
-    pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create account notified1
+#   data:
+#     creator: eosio
+#     new_account: notified1
+#     pubkey: ephemeral
 
-- op: system.newaccount
-  label: Create account notified2
-  data:
-    creator: eosio
-    new_account: notified2
-    pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create account notified2
+#   data:
+#     creator: eosio
+#     new_account: notified2
+#     pubkey: ephemeral
 
-- op: system.newaccount
-  label: Create account notified3
-  data:
-    creator: eosio
-    new_account: notified3
-    pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create account notified3
+#   data:
+#     creator: eosio
+#     new_account: notified3
+#     pubkey: ephemeral
 
-- op: system.newaccount
-  label: Create account notified4
-  data:
-    creator: eosio
-    new_account: notified4
-    pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create account notified4
+#   data:
+#     creator: eosio
+#     new_account: notified4
+#     pubkey: ephemeral
 
-- op: system.newaccount
-  label: Create account notified5
-  data:
-    creator: eosio
-    new_account: notified5
-    pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create account notified5
+#   data:
+#     creator: eosio
+#     new_account: notified5
+#     pubkey: ephemeral
 
 # Account battlefield1 has no onerror handler (notification when a deferred failed)
-- op: system.setcode
-  label: Setting battlefield (without `onerorr` handler) code for account battlefield1
-  data:
-    account: battlefield1
-    contract_name_ref: battlefield-without-handler
+# - op: system.setcode
+#   label: Setting battlefield (without `onerorr` handler) code for account battlefield1
+#   data:
+#     account: battlefield1
+#     contract_name_ref: battlefield-without-handler
 
 # Account battlefield2 is managed inside `run.sh` directly
 
 # Account battlefield3 has onerror handler (notification when a deferred failed)
-- op: system.setcode
-  label: Setting battlefield (with `onerror` handler) code for account battlefield3
-  data:
-    account: battlefield3
-    contract_name_ref: battlefield-with-handler
+# - op: system.setcode
+#   label: Setting battlefield (with `onerror` handler) code for account battlefield3
+#   data:
+#     account: battlefield3
+#     contract_name_ref: battlefield-with-handler
 
-- op: system.setcode
-  label: Setting battlefield code for account notified2
-  data:
-    account: notified2
-    contract_name_ref: battlefield-without-handler
+# - op: system.setcode
+#   label: Setting battlefield code for account notified2
+#   data:
+#     account: notified2
+#     contract_name_ref: battlefield-without-handler
 
-- op: system.newaccount
-  label: Create zzzzzzzzzzzz account
-  data:
-    creator: eosio
-    new_account: zzzzzzzzzzzz
-    pubkey: ephemeral
+# - op: system.newaccount
+#   label: Create zzzzzzzzzzzz account
+#   data:
+#     creator: eosio
+#     new_account: zzzzzzzzzzzz
+#     pubkey: ephemeral
 
 ### End boot
 

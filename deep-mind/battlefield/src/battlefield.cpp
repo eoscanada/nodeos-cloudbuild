@@ -22,6 +22,39 @@ void battlefield::dbins(name account)
     });
 }
 
+void battlefield::kv1insert(name any)
+{
+
+    kv_table1 table(_self);
+
+    kv1_row row;
+    row.id = 1;
+    row.account = "dbops1"_n;
+    row.memo = "inserted billed to calling account";
+    row.created_at = time_point_sec(current_time_point());
+
+    table.put(row);
+
+    // auto kvtable = eosio::kv_table
+
+    //     print("dbins ran and you're authenticated");
+
+    // members member_table(_self, _self.value);
+    // member_table.emplace(account, [&](auto &row) {
+    //     row.id = 1;
+    //     row.account = "dbops1"_n;
+    //     row.memo = "inserted billed to calling account";
+    //     row.created_at = time_point_sec(current_time_point());
+    // });
+
+    // member_table.emplace(_self, [&](auto &row) {
+    //     row.id = 2;
+    //     row.account = "dbops2"_n;
+    //     row.memo = "inserted billed to self";
+    //     row.created_at = time_point_sec(current_time_point());
+    // });
+}
+
 void battlefield::dbinstwo(name account, uint64_t first, uint64_t second)
 {
     require_auth(account);

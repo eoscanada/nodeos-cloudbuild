@@ -29,7 +29,7 @@ function build() {
 build "with-handler" "WITH_ONERROR_HANDLER=1"
 echo ""
 
-build "without-handler" "WITH_ONERROR_HANDLER=0"
+# build "without-handler" "WITH_ONERROR_HANDLER=0"
 
 popd &> /dev/null
 

@@ -12,13 +12,15 @@
 #include <eosio/time.hpp>
 #include <eosio/transaction.hpp>
 
+#include <eosio/key_value.hpp>
+
 using eosio::action;
 using eosio::action_wrapper;
 using eosio::asset;
 using eosio::cancel_deferred;
 using eosio::check;
-using eosio::contract;
 using eosio::const_mem_fun;
+using eosio::contract;
 using eosio::current_time_point;
 using eosio::datastream;
 using eosio::indexed_by;
@@ -30,14 +32,14 @@ using eosio::time_point_sec;
 using std::function;
 using std::string;
 
-class[[eosio::contract("battlefield")]] battlefield : public contract
+class [[eosio::contract("battlefield")]] battlefield : public contract
 {
 public:
     battlefield(name receiver, name code, datastream<const char *> ds)
-        : contract(receiver, code, ds){}
+        : contract(receiver, code, ds) {}
 
-              [[eosio::action]] void
-              dbins(name account);
+    [[eosio::action]] void
+    dbins(name account);
 
     [[eosio::action]] void dbinstwo(name account, uint64_t first, uint64_t second);
 
@@ -148,8 +150,11 @@ public:
     using inlineempty_action = action_wrapper<"inlineempty"_n, &battlefield::inlineempty>;
     using inlinedeep_action = action_wrapper<"inlinedeep"_n, &battlefield::inlinedeep>;
 
+    // KV Actions
+    [[eosio::action]] void kv1insert(name any);
+
 private:
-    struct[[eosio::table]] member_row
+    struct [[eosio::table]] member_row
     {
         uint64_t id;
         name account;
@@ -166,4 +171,31 @@ private:
         "member"_n, member_row,
         indexed_by<"byaccount"_n, const_mem_fun<member_row, uint64_t, &member_row::by_account>>>
         members;
+};
+
+// KV tables and stuff
+struct [[eosio::table]] kv1_row
+{
+    uint64_t id;
+    name account;
+    asset amount;
+    string memo;
+    time_point_sec created_at;
+    time_point_sec expires_at;
+
+    auto primary_key() const { return id; }
+    uint64_t by_account() const { return account.value; }
+};
+
+class kv_table1 : public eosio::kv_table<kv1_row>
+{
+public:
+    kv_table1(name contract) : kv_table()
+    {
+        init(contract, "kvtable1"_n, eosio::kv_ram, primary_key, by_account);
+    }
+
+private:
+    KV_NAMED_INDEX("pk"_n, primary_key);
+    KV_NAMED_INDEX("byaccount"_n, by_account);
 };
