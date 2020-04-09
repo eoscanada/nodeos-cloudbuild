@@ -1,5 +1,7 @@
 #include "battlefield.hpp"
 
+extern "C" __attribute__((eosio_wasm_import)) void set_kv_parameters_packed(uint64_t db, const void *params, uint32_t size);
+
 void battlefield::dbins(name account)
 {
     require_auth(account);
@@ -22,6 +24,21 @@ void battlefield::dbins(name account)
     });
 }
 
+void battlefield::kvbios(name any)
+{
+    auto ramdb = "eosio.kvram"_n;
+    auto diskdb = "eosio.kvdisk"_n;
+
+    uint32_t limits[4];
+    limits[0] = 0;
+    limits[1] = 1024;
+    limits[2] = 65536;
+    limits[3] = 32;
+
+    set_kv_parameters_packed(ramdb.value, limits, sizeof(limits));
+    set_kv_parameters_packed(diskdb.value, limits, sizeof(limits));
+}
+
 void battlefield::kv1insert(name any)
 {
 
@@ -34,6 +51,12 @@ void battlefield::kv1insert(name any)
     row.created_at = time_point_sec(current_time_point());
 
     table.put(row);
+
+    row.account = "dbops2"_n;
+
+    table.put(row);
+
+    table.erase(row);
 
     // auto kvtable = eosio::kv_table
 

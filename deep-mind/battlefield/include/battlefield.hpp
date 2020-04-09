@@ -151,6 +151,8 @@ public:
     using inlinedeep_action = action_wrapper<"inlinedeep"_n, &battlefield::inlinedeep>;
 
     // KV Actions
+    [[eosio::action]] void kvbios(name any);
+
     [[eosio::action]] void kv1insert(name any);
 
 private:

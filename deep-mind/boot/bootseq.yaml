@@ -152,6 +152,11 @@ boot_sequence:
     new_account: battlefield3
     pubkey: ephemeral
 
+- op: system.setpriv
+  label: Setting privileged account for battlefield3
+  data:
+    account: battlefield3
+
 # - op: system.newaccount
 #   label: Create account notified1
 #   data:

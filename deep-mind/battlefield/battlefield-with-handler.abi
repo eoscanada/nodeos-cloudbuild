@@ -212,6 +212,16 @@
             ]
         },
         {
+            "name": "kvbios",
+            "base": "",
+            "fields": [
+                {
+                    "name": "any",
+                    "type": "name"
+                }
+            ]
+        },
+        {
             "name": "member_row",
             "base": "",
             "fields": [
@@ -321,6 +331,11 @@
         {
             "name": "kv1insert",
             "type": "kv1insert",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "kvbios",
+            "type": "kvbios",
             "ricardian_contract": ""
         },
         {

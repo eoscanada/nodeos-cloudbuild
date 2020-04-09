@@ -83,7 +83,11 @@ function main() {
   eosc system setcontract battlefield3 ../battlefield/battlefield-with-handler.wasm ../battlefield/battlefield-with-handler.abi
   sleep 0.6
 
+  eosc tx create battlefield3 kvbios '{"any":"eosio"}' -p battlefield3@active
+  sleep 0.6
+
   eosc tx create battlefield3 kv1insert '{"any":"eosio"}' -p battlefield3@active
+  sleep 0.6
 
   # echo -n "Activate protocol feature (WEBAUTHN_KEY)"
   # eosc tx create eosio activate '{"feature_digest":"4fca8bd82bbd181e714e283f83e1b45d95ca5af40fb89ad3977b653c448f78c2"}' -p eosio@active
