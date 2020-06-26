@@ -200,6 +200,8 @@ github.com/dfuse-io/dfuse-eosio v0.1.1-docker.0.20200623145631-106384fffb34 h1:8
 github.com/dfuse-io/dfuse-eosio v0.1.1-docker.0.20200623145631-106384fffb34/go.mod h1:tqb69a/NkmF2xHvexXfVCjudjxTF78xlis1zzObjqXY=
 github.com/dfuse-io/dfuse-eosio v0.1.1-docker.0.20200626053837-0af711b90c24 h1:CjTFeXxWOeSsa+JeHqL/Bw//lBAixvLcAzgbg2vTIVw=
 github.com/dfuse-io/dfuse-eosio v0.1.1-docker.0.20200626053837-0af711b90c24/go.mod h1:h0mhSO1PEfFtdiHcErJ8nXE1u+p22he35RUh3/qRMYA=
+github.com/dfuse-io/dfuse-eosio v0.1.1-docker.0.20200626142304-9ff6e603f410 h1:kqmZ+sIucxwQwOFcsEHHn7HzsPJI5IXDmScEWi1ywQE=
+github.com/dfuse-io/dfuse-eosio v0.1.1-docker.0.20200626142304-9ff6e603f410/go.mod h1:h0mhSO1PEfFtdiHcErJ8nXE1u+p22he35RUh3/qRMYA=
 github.com/dfuse-io/dgraphql v0.0.0-20200602201547-61cf55466aa4/go.mod h1:/VVsS8/b2hi4Xj07wVfqk+kgx/EEAiVDytLQ5wGPWYM=
 github.com/dfuse-io/dgraphql v0.0.1/go.mod h1:/VVsS8/b2hi4Xj07wVfqk+kgx/EEAiVDytLQ5wGPWYM=
 github.com/dfuse-io/dgrpc v0.0.0-20200406214416-6271093e544c/go.mod h1:n7pQV0mGBMBgJChGKp5gfRLkP2jSCkT+to7fPxKvQPA=
