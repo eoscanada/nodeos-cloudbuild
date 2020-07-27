@@ -96,6 +96,11 @@ function main() {
   fi
   set -e
 
+  echo ""
+  echo -n "Inserting secondary indexes"
+  eosc tx create battlefield1 sktest '{"action":"insert"}' -p battlefield1
+  sleep 0.6
+
   #
   ## Producer Schedule Change
   #
@@ -215,6 +220,12 @@ function main() {
   echo ""
   echo "About to produce transactions to populate a table with 100K rows, this takes roughly 2m to complete"
   create_100k_rows
+
+  echo ""
+  echo "Taking snapshot"
+  curl -s -X POST "$EOSC_GLOBAL_API_URL/v1/producer/create_snapshot" > /dev/null
+  sleep 15
+
 
   # Not required yet, but often leads to transaction max execution time reached, so will need some tweaks to config I guess...
   # echo ""

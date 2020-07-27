@@ -220,9 +220,21 @@ private:
     typedef eosio::multi_index<"sk.c"_n, sk_row, indexed_by<"c"_n, const_mem_fun<sk_row, checksum256, &sk_row::by_c256>>> sk_c256;
 
     typedef eosio::multi_index<"sk.multi"_n, sk_row,
-                               indexed_by<"i"_n, const_mem_fun<sk_row, uint64_t, &sk_row::by_i64>>,
-                               indexed_by<"ii"_n, const_mem_fun<sk_row, uint128_t, &sk_row::by_i128>>,
-                               indexed_by<"d"_n, const_mem_fun<sk_row, double, &sk_row::by_d64>>,
-                               indexed_by<"dd"_n, const_mem_fun<sk_row, long double, &sk_row::by_d128>>>
+                               indexed_by<"i.1"_n, const_mem_fun<sk_row, uint64_t, &sk_row::by_i64>>,
+                               indexed_by<"ii.1"_n, const_mem_fun<sk_row, uint128_t, &sk_row::by_i128>>,
+                               indexed_by<"d.1"_n, const_mem_fun<sk_row, double, &sk_row::by_d64>>,
+                               indexed_by<"dd.1"_n, const_mem_fun<sk_row, long double, &sk_row::by_d128>>,
+                               indexed_by<"c.1"_n, const_mem_fun<sk_row, checksum256, &sk_row::by_c256>>,
+                               indexed_by<"i.2"_n, const_mem_fun<sk_row, uint64_t, &sk_row::by_i64>>,
+                               indexed_by<"ii.2"_n, const_mem_fun<sk_row, uint128_t, &sk_row::by_i128>>,
+                               indexed_by<"d.2"_n, const_mem_fun<sk_row, double, &sk_row::by_d64>>,
+                               indexed_by<"dd.2"_n, const_mem_fun<sk_row, long double, &sk_row::by_d128>>,
+                               indexed_by<"c.2"_n, const_mem_fun<sk_row, checksum256, &sk_row::by_c256>>,
+                               indexed_by<"i.3"_n, const_mem_fun<sk_row, uint64_t, &sk_row::by_i64>>,
+                               indexed_by<"ii.3"_n, const_mem_fun<sk_row, uint128_t, &sk_row::by_i128>>,
+                               indexed_by<"d.3"_n, const_mem_fun<sk_row, double, &sk_row::by_d64>>,
+                               indexed_by<"dd.3"_n, const_mem_fun<sk_row, long double, &sk_row::by_d128>>,
+                               indexed_by<"c.3"_n, const_mem_fun<sk_row, checksum256, &sk_row::by_c256>>,
+                               indexed_by<"i.4"_n, const_mem_fun<sk_row, uint64_t, &sk_row::by_i64>>>
         sk_multi;
 };
