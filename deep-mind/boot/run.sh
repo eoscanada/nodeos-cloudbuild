@@ -148,6 +148,19 @@ function main() {
   sleep 3.6
 
   #
+  ## Custom Token
+  #
+  echo ""
+  echo "Creating a custom token"
+  eosc system newaccount battlefield1 battlefieldt --auth-key EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP --stake-cpu 1 --stake-net 1 --transfer
+  eosc system buyrambytes eosio battlefieldt 250000
+  eosc system setcontract battlefieldt contracts/eosio.token-1.9.0.wasm contracts/eosio.token-1.9.0.abi
+  eosc tx create battlefieldt create '{"issuer":"battlefieldt","maximum_supply":"10000000000.0000 DFU"}' -p battlefieldt
+  eosc tx create battlefieldt issue '{"to":"battlefieldt","quantity":"1000011821.0000 DFU", "memo":"Creation of DFU"}' -p battlefieldt
+  eosc tx create battlefieldt transfer '{"from":"battlefieldt","to":"battlefield1","quantity":"1000.0000 DFU", "memo":"Initial funds"}' -p battlefieldt  
+  sleep 0.6
+
+  #
   ## WebAuthN keys
   #
 
