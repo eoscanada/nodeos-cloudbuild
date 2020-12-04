@@ -165,14 +165,14 @@ async function pushTransaction() {
           account: 'eosio.token',
           name: 'transfer',
           data: {
-            from: 'battlefield4',
+            from: 'battlefeeld4',
             to: 'eosio',
             quantity: '1.0000 EOS',
             memo: '',
           },
           authorization: [
             {
-              actor: 'battlefield4',
+              actor: 'battlefeeld4',
               permission: 'active',
             },
           ],

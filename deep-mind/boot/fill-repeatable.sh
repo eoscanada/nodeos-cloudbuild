@@ -18,8 +18,6 @@ function main() {
   fi
   shift
 
-  protocol="$1"
-
   # Trap exit signal and clean up
   trap cleanup EXIT
   pushd $ROOT &> /dev/null
@@ -103,7 +101,7 @@ function main() {
   eosc tx create battlefield1 dbremtwo '{"account": "battlefield1", "first": 200, "second": 201}' -p battlefield1
 
   echo ""
-  echo -n "Create a delayed and cancel it (in same block) with 'eosio:canceldelay'"
+  echo "Create a delayed and cancel it (in same block) with 'eosio:canceldelay'"
   eosc tx create --delay-sec=3600 battlefield1 dbins '{"account": "battlefield1"}' -p battlefield1 --write-transaction /tmp/delayed.json
   ID=`eosc tx id /tmp/delayed.json`
   eosc tx push /tmp/delayed.json
@@ -113,7 +111,7 @@ function main() {
   sleep 0.6
 
   echo ""
-  echo -n "Create a delayed and cancel it (in different block) with 'eosio:canceldelay'"
+  echo "Create a delayed and cancel it (in different block) with 'eosio:canceldelay'"
   eosc tx create --delay-sec=3600 battlefield1 dbins '{"account": "battlefield1"}' -p battlefield1 --write-transaction /tmp/delayed.json
   ID=`eosc tx id /tmp/delayed.json`
   eosc tx push /tmp/delayed.json
@@ -145,6 +143,26 @@ function main() {
   ## We use the --force-unique flag so a context-free action exist in the transactions traces tree prior our own,
   ## creating a multi-root execution traces tree.
   eosc tx create --force-unique battlefield1 creaorder '{"n1": "notified1", "n2": "notified2", "n3": "notified3", "n4": "notified4", "n5": "notified5"}' -p battlefield1
+  sleep 0.6
+
+  ## Series of test for variant support
+
+  eosc tx create battlefield1 varianttest '{"value":["uint16",12]}' -p battlefield1
+  eosc tx create battlefield1 varianttest '{"value":["string","this is a long value"]}' -p battlefield1
+  sleep 0.6
+
+  ## Series of test for secondary keys
+
+  eosc tx create battlefield1 sktest '{"action":"insert"}' -p battlefield1
+  sleep 0.6
+
+  eosc tx create battlefield1 sktest '{"action":"update.sk"}' -p battlefield1
+  sleep 0.6
+
+  eosc tx create battlefield1 sktest '{"action":"update.ot"}' -p battlefield1
+  sleep 0.6
+
+  eosc tx create battlefield1 sktest '{"action":"remove"}' -p battlefield1
   sleep 0.6
 }
 

@@ -20,6 +20,15 @@ $ git branch -r | grep build/ | sed s'/origin\///'g
   build/wax-vanilla
 ```
 
+List the available build envs:
+
+    gcloud container images list-tags gcr.io/eoscanada-shared-services/eosio-buildenv
+
+Boot one locally:
+
+    docker run --name eos-buildenv -ti -v `pwd`:`pwd` -w `pwd` gcr.io/eoscanada-shared-services/eosio-buildenv:v2.0.0 /bin/bash
+
+
 ### Updating EOSIO version
 
 Let's assuming you want to update EOSIO vanilla version to `v2.0.3` and the Deep Mind

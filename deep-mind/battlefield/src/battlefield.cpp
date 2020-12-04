@@ -326,3 +326,252 @@ void battlefield::inlinedeep(
     action cfaNested(std::vector<permission_level>(), "eosio.null"_n, "nonce"_n, std::make_tuple(nestedCfaInlineTag));
     cfaNested.send_context_free();
 }
+
+void battlefield::varianttest(varying_action value)
+{
+    std::visit([](auto &&arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, uint16_t>)
+        {
+            print("Called uint16_t variant", arg, "\n");
+        }
+        else if constexpr (std::is_same_v<T, std::string>)
+        {
+            print("Called string variant", arg, "\n");
+        }
+    },
+               value);
+
+    variers variant_table(_self, _self.value);
+    variant_table.emplace(_self, [&](auto &row) {
+        row.id = variant_table.available_primary_key();
+        row.creation_number = 0xFFFFFFFF00;
+
+        if (value.index() == 0)
+        {
+            row.variant_field = std::get<uint16_t>(value);
+        }
+        else
+        {
+            row.variant_field = int32_t(std::get<string>(value).length());
+        }
+    });
+}
+
+void battlefield::producerows(uint64_t row_count)
+{
+    variers variant_table(_self, _self.value);
+
+    for (uint64_t i = 0; i < row_count; ++i)
+    {
+        variant_table.emplace(_self, [&](auto &row) {
+            row.id = variant_table.available_primary_key();
+            row.creation_number = i;
+
+            if (i % 5 == 0)
+            {
+                row.variant_field = int32_t(i);
+            }
+            else if (i % 4 == 0)
+            {
+                row.variant_field = uint32_t(i);
+            }
+            else if (i % 3 == 0)
+            {
+                row.variant_field = uint16_t(i);
+            }
+            else if (i % 2 == 0)
+            {
+                row.variant_field = int8_t(i);
+            }
+        });
+    }
+}
+
+void battlefield::sktest(name action)
+{
+    // It's expected to have those called on a certain order
+
+    sk_i64 sk_i64_table(_self, _self.value);
+    sk_i128 sk_i128_table(_self, _self.value);
+    sk_d64 sk_d64_table(_self, _self.value);
+    sk_d128 sk_d128_table(_self, _self.value);
+    sk_c256 sk_c256_table(_self, _self.value);
+    sk_multi sk_multi_table(_self, _self.value);
+
+    if (action == "insert"_n)
+    {
+        sk_i64_table.emplace(_self, [&](auto &row) {
+            row.id = sk_i64_table.available_primary_key();
+            row.i64 = uint64_t(row.id + 1);
+        });
+
+        sk_i128_table.emplace(_self, [&](auto &row) {
+            row.id = sk_i128_table.available_primary_key();
+            row.i128 = uint128_t(row.id + 2);
+        });
+
+        sk_d64_table.emplace(_self, [&](auto &row) {
+            row.id = sk_d64_table.available_primary_key();
+            row.d64 = double(row.id) + 3.1;
+        });
+
+        sk_d128_table.emplace(_self, [&](auto &row) {
+            row.id = sk_d128_table.available_primary_key();
+            row.d128 = (long double)(row.id) + (long double)(4.6);
+        });
+
+        sk_c256_table.emplace(_self, [&](auto &row) {
+            row.id = sk_c256_table.available_primary_key();
+
+            uint128_t end = uint128_t(0xFFAABB00DDEE1122) << 64 | uint128_t(0x0033445500FFAA22);
+            std::array<uint128_t, 2> words = {row.id + 5, end};
+
+            row.c256 = checksum256(words);
+        });
+
+        sk_multi_table.emplace(_self, [&](auto &row) {
+            row.id = sk_multi_table.available_primary_key();
+            row.i64 = uint64_t(row.id + 1);
+            row.i128 = uint128_t(row.id + 2);
+            row.d64 = double(row.id) + 3.1;
+            row.d128 = (long double)(row.id) + (long double)(4.6);
+        });
+    }
+    else if (action == "update.sk"_n)
+    {
+        auto sk_i64_id = uint64_t(sk_i64_table.available_primary_key() - 1) + 1;
+        auto sk_i64_index = sk_i64_table.template get_index<"i"_n>();
+        auto itr_sk_i64 = sk_i64_index.require_find(sk_i64_id);
+        sk_i64_index.modify(itr_sk_i64, _self, [](auto &row) {
+            row.i64 = row.i64 + 1;
+        });
+
+        auto sk_i128_id = uint128_t(sk_i128_table.available_primary_key() - 1) + 2;
+        auto sk_i128_index = sk_i128_table.template get_index<"ii"_n>();
+        auto itr_sk_i128 = sk_i128_index.require_find(sk_i128_id);
+        sk_i128_index.modify(itr_sk_i128, _self, [](auto &row) {
+            row.i128 = row.i128 + 2;
+        });
+
+        auto sk_d64_id = double(sk_d64_table.available_primary_key() - 1) + 3.1;
+        auto sk_d64_index = sk_d64_table.template get_index<"d"_n>();
+        auto itr_sk_d64 = sk_d64_index.require_find(sk_d64_id);
+        sk_d64_index.modify(itr_sk_d64, _self, [](auto &row) {
+            row.d64 = row.d64 + 3.2;
+        });
+
+        auto sk_d128_id = (long double)(sk_d128_table.available_primary_key() - 1) + 4.6;
+        auto sk_d128_index = sk_d128_table.template get_index<"dd"_n>();
+        auto itr_sk_d128 = sk_d128_index.require_find(sk_d128_id);
+        sk_d128_index.modify(itr_sk_d128, _self, [](auto &row) {
+            row.d128 = row.d128 + 4.7;
+        });
+
+        uint128_t end = uint128_t(0xFFAABB00DDEE1122) << 64 | uint128_t(0x0033445500FFAA22);
+        std::array<uint128_t, 2> words = {(sk_c256_table.available_primary_key() - 1) + 5, end};
+
+        auto sk_c256_id = checksum256(words);
+        auto sk_c256_index = sk_c256_table.template get_index<"c"_n>();
+        auto itr_sk_c256 = sk_c256_index.require_find(sk_c256_id);
+        sk_c256_index.modify(itr_sk_c256, _self, [](auto &row) {
+            uint128_t end = uint128_t(0xFFAABB00DDEE1122) << 64 | uint128_t(0x0033445500FFAA22);
+            std::array<uint128_t, 2> words = {row.id + 10, end};
+
+            row.c256 = checksum256(words);
+        });
+
+        auto sk_multi_id = sk_multi_table.available_primary_key() - 1;
+        auto itr_multi = sk_multi_table.require_find(sk_multi_id);
+        sk_multi_table.modify(itr_multi, _self, [](auto &row) {
+            row.i64 = row.i64 + 1;
+            row.i128 = row.i128 + 2;
+            row.d64 = row.d64 + 3.2;
+            row.d128 = row.d128 + 4.7;
+        });
+    }
+    else if (action == "update.ot"_n)
+    {
+        auto sk_i64_id = uint64_t(sk_i64_table.available_primary_key() - 1) + 1 + 1;
+        auto sk_i64_index = sk_i64_table.template get_index<"i"_n>();
+        auto itr_sk_i64 = sk_i64_index.require_find(sk_i64_id);
+        sk_i64_index.modify(itr_sk_i64, _self, [](auto &row) {
+            row.unrelated = row.id + 1;
+        });
+
+        auto sk_i128_id = uint128_t(sk_i128_table.available_primary_key() - 1) + 2 + 2;
+        auto sk_i128_index = sk_i128_table.template get_index<"ii"_n>();
+        auto itr_sk_i128 = sk_i128_index.require_find(sk_i128_id);
+        sk_i128_index.modify(itr_sk_i128, _self, [](auto &row) {
+            row.unrelated = row.id + 2;
+        });
+
+        auto sk_d64_id = double(sk_d64_table.available_primary_key() - 1) + 3.1 + 3.2;
+        auto sk_d64_index = sk_d64_table.template get_index<"d"_n>();
+        auto itr_sk_d64 = sk_d64_index.require_find(sk_d64_id);
+        sk_d64_index.modify(itr_sk_d64, _self, [](auto &row) {
+            row.unrelated = row.id + 3;
+        });
+
+        auto sk_d128_id = (long double)(sk_d128_table.available_primary_key() - 1) + 4.6 + 4.7;
+        auto sk_d128_index = sk_d128_table.template get_index<"dd"_n>();
+        auto itr_sk_d128 = sk_d128_index.require_find(sk_d128_id);
+        sk_d128_index.modify(itr_sk_d128, _self, [](auto &row) {
+            row.unrelated = row.id + 4;
+        });
+
+        uint128_t end = uint128_t(0xFFAABB00DDEE1122) << 64 | uint128_t(0x0033445500FFAA22);
+        std::array<uint128_t, 2> words = {(sk_c256_table.available_primary_key() - 1) + 10, end};
+
+        auto sk_c256_id = checksum256(words);
+        auto sk_c256_index = sk_c256_table.template get_index<"c"_n>();
+        auto itr_sk_c256 = sk_c256_index.require_find(sk_c256_id);
+        sk_c256_index.modify(itr_sk_c256, _self, [](auto &row) {
+            row.unrelated = row.id + 5;
+        });
+
+        auto sk_multi_id = sk_multi_table.available_primary_key() - 1;
+        auto itr_multi = sk_multi_table.require_find(sk_multi_id);
+        sk_multi_table.modify(itr_multi, _self, [](auto &row) {
+            row.unrelated = row.id + 6;
+        });
+    }
+    else if (action == "remove"_n)
+    {
+        auto sk_i64_id = uint64_t(sk_i64_table.available_primary_key() - 1) + 1 + 1;
+        auto sk_i64_index = sk_i64_table.template get_index<"i"_n>();
+        auto itr_sk_i64 = sk_i64_index.require_find(sk_i64_id);
+        sk_i64_index.erase(itr_sk_i64);
+
+        auto sk_i128_id = uint128_t(sk_i128_table.available_primary_key() - 1) + 2 + 2;
+        auto sk_i128_index = sk_i128_table.template get_index<"ii"_n>();
+        auto itr_sk_i128 = sk_i128_index.require_find(sk_i128_id);
+        sk_i128_index.erase(itr_sk_i128);
+
+        auto sk_d64_id = double(sk_d64_table.available_primary_key() - 1) + 3.1 + 3.2;
+        auto sk_d64_index = sk_d64_table.template get_index<"d"_n>();
+        auto itr_sk_d64 = sk_d64_index.require_find(sk_d64_id);
+        sk_d64_index.erase(itr_sk_d64);
+
+        auto sk_d128_id = (long double)(sk_d128_table.available_primary_key() - 1) + 4.6 + 4.7;
+        auto sk_d128_index = sk_d128_table.template get_index<"dd"_n>();
+        auto itr_sk_d128 = sk_d128_index.require_find(sk_d128_id);
+        sk_d128_index.erase(itr_sk_d128);
+
+        uint128_t end = uint128_t(0xFFAABB00DDEE1122) << 64 | uint128_t(0x0033445500FFAA22);
+        std::array<uint128_t, 2> words = {(sk_c256_table.available_primary_key() - 1) + 10, end};
+
+        auto sk_c256_id = checksum256(words);
+        auto sk_c256_index = sk_c256_table.template get_index<"c"_n>();
+        auto itr_sk_c256 = sk_c256_index.require_find(sk_c256_id);
+        sk_c256_index.erase(itr_sk_c256);
+
+        auto sk_multi_id = sk_multi_table.available_primary_key() - 1;
+        auto itr_multi = sk_multi_table.require_find(sk_multi_id);
+        sk_multi_table.erase(itr_multi);
+    }
+    else
+    {
+        eosio::check(false, "The action must be one of insert, update.ot, update.sk or remove");
+    }
+}

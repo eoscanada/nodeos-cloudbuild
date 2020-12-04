@@ -5,8 +5,8 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BROWN='\033[0;33m'
 NC='\033[0m'
 
-CDT_CONTAINER=${CDT_CONTAINER:-"eoscanada/eosio-cdt"}
-CDT_VERSION=${CDT_VERSION:-"v1.6.1"}
+CDT_CONTAINER=${CDT_CONTAINER:-"eostudio/eosio.cdt"}
+CDT_VERSION=${CDT_VERSION:-"v1.7.0"}
 
 image_id="${CDT_CONTAINER}:${CDT_VERSION}"
 

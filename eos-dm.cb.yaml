@@ -1,8 +1,8 @@
 ### Commit and push those values in!
 substitutions:
-  _REPOSITORY: "git@github.com:eoscanada/eosio-eos-private.git"
-  _BRANCH: v2.0.3-dm-v10.4-2 # Can be either a tag or a branch, branch can be used when "testing" stuff out
-  _VERSION: v2.0.3-dm-v10.4-2
+  _REPOSITORY: "git@github.com:dfuse-io/eos.git"
+  _BRANCH: v2.0.6-dm-12.0 # Can be either a tag or a branch, branch can be used when "testing" stuff out
+  _VERSION: v2.0.6-dm.12.0
   _IMAGE_TAG: ubuntu-18.04
   _OS: ubuntu-18.04
   _PKGTYPE: deb
@@ -50,6 +50,7 @@ steps:
       IdentityFile /root/.ssh/id_rsa
     EOF
 
+    git config --global --add url."git@github.com:dfuse-io/".insteadOf "https://github.com/dfuse-io/"
     git config --global --add url."git@github.com:eoscanada/".insteadOf "https://github.com/eoscanada/"
   volumes:
   - name: 'ssh'
@@ -130,7 +131,27 @@ steps:
   - name: 'git'
     path: '/git'
 
-# Perform the actual build/test step of the project
+- id: docker-tag-untested
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'tag',
+    'gcr.io/$PROJECT_ID/eosio-eos-prod:${_VERSION}-${_OS}',
+    'gcr.io/$PROJECT_ID/eosio-eos-prod:${_VERSION}-${_OS}-untested',
+  ]
+  volumes:
+  - name: 'git'
+    path: '/git'
+
+- id: docker-push-untested
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'push',
+    'gcr.io/$PROJECT_ID/eosio-eos-prod:${_VERSION}-${_OS}-untested',
+  ]
+  volumes:
+  - name: 'git'
+    path: '/git'
+
 - id: deep-mind-nodeos-tests
   name: gcr.io/$PROJECT_ID/eosio-eos-prod:${_VERSION}-${_OS}
   entrypoint: bash
@@ -139,7 +160,7 @@ steps:
   - |
     if [[ "${_VERSION}" =~ "dm" ]]; then
       cd /workspace/deep-mind/compare
-      SKIP_GO_TESTS=y ./run.sh /usr/bin/nodeos
+      RUN_MODE=only_generate ./run.sh eos-2.x /usr/bin/nodeos
     fi
 
 - id: deep-mind-go-tests
@@ -147,13 +168,13 @@ steps:
   entrypoint: 'bash'
   env:
   - CGO_ENABLED=1
-  - GOPRIVATE=github.com/eoscanada/*
+  - GOPRIVATE=github.com/eoscanada/*,github.com/dfuse-io/*
   args:
   - '-cxe'
   - |
     if [[ "${_VERSION}" =~ "dm" ]]; then
       cd /workspace/deep-mind/compare
-      go test -v ./...
+      RUN_MODE=only_compare ./run.sh eos-2.x
     fi
   volumes:
   - name: 'ssh'
@@ -166,7 +187,7 @@ steps:
   args: [
     'cp',
     '/git/build/packages/*.${_PKGTYPE}',
-    'gs://eoscanada-shared-services_cloudbuild/packages/${_OS}/',
+    'gs://eoscanada-shared-services_cloudbuild/packages/eos/${_OS}/',
   ]
   volumes:
   - name: 'git'

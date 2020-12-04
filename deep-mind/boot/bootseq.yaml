@@ -1,37 +1,38 @@
 keys:
   ephemeral: 5JpjqdhVCQTegTjrLtCSXHce7c9M8w7EXYZS7xC13jVFF4Phcrx   #  EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP
 
+## **Important** All resources are reference from one of the "target" folder, like `eos-2.x` for example!
 contents:
   - name: eosio.bios.abi
-    url: ./contracts/eosio.bios-1.0.2.abi
+    url: ../contracts/eosio.bios-1.0.2.abi
   - name: eosio.bios.wasm
-    url: ./contracts/eosio.bios-1.0.2.wasm
+    url: ../contracts/eosio.bios-1.0.2.wasm
 
   - name: eosio.system.abi
-    url: ./contracts/eosio.system-1.0.2.abi
+    url: ../contracts/eosio.system-1.0.2.abi
   - name: eosio.system.wasm
-    url: ./contracts/eosio.system-1.0.2.wasm
+    url: ../contracts/eosio.system-1.0.2.wasm
 
   - name: eosio.msig.abi
-    url: ./contracts/eosio.msig-1.0.2.abi
+    url: ../contracts/eosio.msig-1.0.2.abi
   - name: eosio.msig.wasm
-    url: ./contracts/eosio.msig-1.0.2.wasm
+    url: ../contracts/eosio.msig-1.0.2.wasm
 
   - name: eosio.token.abi
-    url: ./contracts/eosio.token-1.0.2.abi
+    url: ../contracts/eosio.token-1.0.2.abi
   - name: eosio.token.wasm
-    url: ./contracts/eosio.token-1.0.2.wasm
+    url: ../contracts/eosio.token-1.0.2.wasm
 
 ## Custom contracts
   - name: battlefield-with-handler.wasm
-    url: ../battlefield/battlefield-with-handler.wasm
+    url: ../../battlefield/battlefield-with-handler.wasm
   - name: battlefield-with-handler.abi
-    url: ../battlefield/battlefield-with-handler.abi
+    url: ../../battlefield/battlefield-with-handler.abi
 
-  # - name: battlefield-without-handler.wasm
-  #   url: ../battlefield/battlefield-without-handler.wasm
-  # - name: battlefield-without-handler.abi
-  #   url: ../battlefield/battlefield-without-handler.abi
+  - name: battlefield-without-handler.wasm
+    url: ../../battlefield/battlefield-without-handler.wasm
+  - name: battlefield-without-handler.abi
+    url: ../../battlefield/battlefield-without-handler.abi
 
 ################################# BOOT SEQUENCE ###################################
 boot_sequence:
@@ -154,6 +155,51 @@ boot_sequence:
 
 - op: system.setpriv
   label: Setting privileged account for battlefield3
+
+- op: system.newaccount
+  label: Create account battlefield4
+  data:
+    creator: eosio
+    new_account: battlefield4
+    pubkey: ephemeral
+
+- op: system.newaccount
+  label: Create account battlefield5
+  data:
+    creator: eosio
+    new_account: battlefield5
+    pubkey: ephemeral
+
+- op: system.newaccount
+  label: Create account battlefield6
+  data:
+    creator: eosio
+    new_account: battlefield6
+    pubkey: ephemeral
+
+- op: system.newaccount
+  label: Create account notified1
+  data:
+    creator: eosio
+    new_account: notified1
+    pubkey: ephemeral
+
+- op: system.newaccount
+  label: Create account notified2
+  data:
+    creator: eosio
+    new_account: notified2
+    pubkey: ephemeral
+
+- op: system.newaccount
+  label: Create account notified3
+  data:
+    creator: eosio
+    new_account: notified3
+    pubkey: ephemeral
+
+- op: system.newaccount
+  label: Create account notified4
   data:
     account: battlefield3
 

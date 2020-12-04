@@ -1,28 +1,36 @@
-*.log
-*.dmlog
-*.jsonl
-*.stats.json
+##
+# **Important**
+#
+# You might tempted to move some of those inside their respective sub-folder,
+# but do NOT do that! Keep everything in this top-level `.gitignore` because it
+# is used by `gcloud` command (specially in `.gcloudignore` here) to ignore
+# files.
+#
+# And if you modified this `.gitignore`, please also check that the `gcloud`
+# is not including big files.
+#
+# Check with `gcloud meta list-files-for-upload | xargs -n1 du -sh`
+#
+
 .DS_Store
 .envrc
 .vscode
-build-*/**
 node_modules
 
-#  For ./deep-mind/boot
-/deep-mind/boot/state/
-!/deep-mind/boot/blocks/blocks.log
-/deep-mind/boot/blocks/reversible/
-/deep-mind/boot/blocks-*/
-/deep-mind/boot/snapshot-*
-/deep-mind/boot/snapshots/
-/deep-mind/boot/snapshots-*/
-/deep-mind/boot/webauthn_keys_db.json
+reversible/
+state/
+snapshots/
+deep-mind/compare/*/blocks
+deep-mind/compare/*/protocol_features
 
-# For ./deep-mind/compare
-/deep-mind/compare/blocks/
-/deep-mind/compare/protocol_features/
-/deep-mind/compare/state/
-/deep-mind/compare/diff.patch
-!/deep-mind/compare/reference.jsonl
-!/deep-mind/compare/reference.log
-!/deep-mind/compare/reference.stats.json
+deep-mind.dmlog
+diff.patch
+eosc-boot.log
+nodeos.log
+output.log
+reference.log
+output.jsonl
+output.stats.json
+actual.dmlog
+actual.json
+webauthn_keys_db.json

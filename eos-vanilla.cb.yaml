@@ -1,9 +1,9 @@
 ### Commit and push those values in!
 substitutions:
   # Copy the `*.deb` file of the release you want to build from 'https://github.com/EOSIO/eos/releases'
-  _PACKAGE_URL: "https://github.com/EOSIO/eos/releases/download/v2.0.3/eosio_2.0.3-1-ubuntu-18.04_amd64.deb"
+  _PACKAGE_URL: "https://github.com/EOSIO/eos/releases/download/v2.0.5/eosio_2.0.5-1-ubuntu-18.04_amd64.deb"
   _IMAGE_TAG: ubuntu-18.04
-  _VERSION: v2.0.3
+  _VERSION: v2.0.5
 
 steps:
 - id: download package
